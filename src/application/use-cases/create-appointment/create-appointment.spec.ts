@@ -31,7 +31,7 @@ describe('CreateAppointment Use Case', () => {
     })
 
     expect(appointment).toBeInstanceOf(Appointment)
-    expect(appointment.status).toBe('CONFIRMED')
+    expect(appointment.status).toBe('PENDING')
     expect(appointment.startAt).toEqual(startAt)
   })
 
@@ -94,14 +94,12 @@ describe('CreateAppointment Use Case', () => {
     const startAt = getFutureDate('2025-06-01 10:00')
     const endAt = getFutureDate('2025-06-01 10:30')
 
-    // Create an existing appointment for the barber
     await createAppointment.execute({
       ...baseInput,
       startAt,
       endAt,
     })
 
-    // Try to create a conflicting one
     await expect(() =>
       createAppointment.execute({
         ...baseInput,

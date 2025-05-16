@@ -1,7 +1,7 @@
 import { differenceInMinutes, isBefore, isPast } from 'date-fns'
 import { Service, SERVICES } from '../../@types/barber'
 
-export type AppointmentStatus = 'CONFIRMED' | 'CANCELED'
+export type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'CANCELED'
 
 interface AppointmentProps {
   id: string

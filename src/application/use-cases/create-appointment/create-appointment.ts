@@ -26,7 +26,7 @@ export class CreateAppointment {
       id: v4(),
       customerId,
       barberId,
-      status: 'CONFIRMED',
+      status: 'PENDING',
       service,
       startAt,
       endAt,

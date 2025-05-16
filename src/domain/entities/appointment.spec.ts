@@ -1,143 +1,94 @@
 import { addMinutes, subMinutes } from 'date-fns'
-import { v4 as uuidv4 } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import { SERVICES } from '../../@types/barber'
-import { Appointment } from './appointment'
+import { Appointment, AppointmentStatus } from './appointment'
 
-describe('Appointment Entity', () => {
-  const customerId = uuidv4()
-  const service = SERVICES.kids_haircut
+describe('Appointment entity', () => {
+  const validProps = {
+    id: 'appointment-1',
+    customerId: 'customer-1',
+    barberId: 'barber-1',
+    service: SERVICES.classic_haircut,
+    status: 'PENDING' as AppointmentStatus,
+    startAt: addMinutes(new Date(), 10),
+    endAt: addMinutes(new Date(), 40),
+  }
 
   it('should create a valid appointment', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 10)
-    const endAt = addMinutes(startAt, 60)
-
-    const appointment = new Appointment({
-      id: uuidv4(),
-      customerId,
-      barberId: 'barber1',
-      service,
-      status: 'CONFIRMED',
-      startAt,
-      endAt,
-    })
-
+    const appointment = new Appointment(validProps)
     expect(appointment).toBeInstanceOf(Appointment)
-    expect(appointment.status).toBe('CONFIRMED')
+    expect(appointment.id).toBe(validProps.id)
+    expect(appointment.status).toBe(validProps.status)
+    expect(appointment.startAt).toBe(validProps.startAt)
+    expect(appointment.endAt).toBe(validProps.endAt)
+    expect(appointment.service).toBe(validProps.service)
   })
 
-  it('should throw if service is not in allowed specialties', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 10)
-    const endAt = addMinutes(startAt, 30)
-
-    expect(() => {
-      new Appointment({
-        id: uuidv4(),
-        customerId,
-        barberId: 'barber1',
-        service: 'CUSTOM_SERVICE' as any,
-        status: 'CONFIRMED',
-        startAt,
-        endAt,
-      })
-    }).toThrow('Cannot create custom Appointment service.')
+  it('should throw if service is not allowed', () => {
+    expect(
+      () =>
+        new Appointment({
+          ...validProps,
+          service: 'Invalid Service' as any,
+        })
+    ).toThrow('Cannot create custom Appointment service.')
   })
 
-  it('should throw if start date is in the past', () => {
-    const now = new Date()
-    const startAt = subMinutes(now, 1)
-    const endAt = addMinutes(startAt, 30)
-
-    expect(() => {
-      new Appointment({
-        id: uuidv4(),
-        customerId,
-        barberId: 'barber1',
-        service,
-        status: 'CONFIRMED',
-        startAt,
-        endAt,
-      })
-    }).toThrow('Start date must be in the future.')
+  it('should throw if startAt is in the past', () => {
+    expect(
+      () =>
+        new Appointment({
+          ...validProps,
+          startAt: subMinutes(new Date(), 10),
+        })
+    ).toThrow('Start date must be in the future.')
   })
 
-  it('should throw if end date is before start date', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 10)
-    const endAt = subMinutes(startAt, 5)
-
-    expect(() => {
-      new Appointment({
-        id: uuidv4(),
-        customerId,
-        barberId: 'barber1',
-        service,
-        status: 'CONFIRMED',
-        startAt,
-        endAt,
-      })
-    }).toThrow('End date must be after start date.')
+  it('should throw if endAt is before startAt', () => {
+    expect(
+      () =>
+        new Appointment({
+          ...validProps,
+          endAt: addMinutes(validProps.startAt, -5),
+        })
+    ).toThrow('End date must be after start date.')
   })
 
-  it('should throw if appointment duration exceeds 90 minutes', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 10)
-    const endAt = addMinutes(startAt, 91)
-
-    expect(() => {
-      new Appointment({
-        id: uuidv4(),
-        customerId,
-        barberId: 'barber1',
-        service,
-        status: 'CONFIRMED',
-        startAt,
-        endAt,
-      })
-    }).toThrow('Appointment cannot be longer than 1 hour and 30 minutes.')
+  it('should throw if appointment duration is longer than 90 minutes', () => {
+    expect(
+      () =>
+        new Appointment({
+          ...validProps,
+          endAt: addMinutes(validProps.startAt, 91),
+        })
+    ).toThrow('Appointment cannot be longer than 1 hour and 30 minutes.')
   })
 
-  it('should allow cancellation if more than 5 minutes before start', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 10)
-    const endAt = addMinutes(startAt, 30)
+  describe('cancel method', () => {
+    it('should cancel the appointment if there are more than 5 minutes before start', () => {
+      const appointment = new Appointment(validProps)
+      const canceled = appointment.cancel()
 
-    const appointment = new Appointment({
-      id: uuidv4(),
-      customerId,
-      barberId: 'barber1',
-      service,
-      status: 'CONFIRMED',
-      startAt,
-      endAt,
+      expect(canceled.status).toBe('CANCELED')
+      expect(canceled.id).toBe(appointment.id)
     })
 
-    const cancelled = appointment.cancel()
+    it('should throw if trying to cancel less than 5 minutes before start', () => {
+      const startAtSoon = addMinutes(new Date(), 4)
+      const appointment = new Appointment({
+        ...validProps,
+        startAt: startAtSoon,
+        endAt: addMinutes(startAtSoon, 30),
+      })
 
-    expect(cancelled.status).toBe('CANCELED')
+      expect(() => appointment.cancel()).toThrow(
+        'Cannot cancel appointment less than 5 minutes before the start time.'
+      )
+    })
   })
 
-  it('should not allow cancellation if less than 5 minutes before start', () => {
-    const now = new Date()
-    const startAt = addMinutes(now, 4)
-    const endAt = addMinutes(startAt, 30)
-
-    const appointment = new Appointment({
-      id: uuidv4(),
-      customerId,
-      barberId: 'barber1',
-      service,
-      status: 'CONFIRMED',
-      startAt,
-      endAt,
-    })
-
-    expect(() => {
-      appointment.cancel()
-    }).toThrow(
-      'Cannot cancel appointment less than 5 minutes before the start time.'
-    )
+  it('toJSON returns props', () => {
+    const appointment = new Appointment(validProps)
+    expect(appointment.toJSON()).toEqual(validProps)
   })
 })
