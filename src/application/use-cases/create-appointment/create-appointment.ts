@@ -1,7 +1,7 @@
 import { v4 } from 'uuid'
+import { Service } from '../../../@types/barber'
 import { Appointment } from '../../../domain/entities/appointment'
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
-import { Service } from '../../../types/barber'
 
 interface CreateAppointmentRequest {
   customerId: string

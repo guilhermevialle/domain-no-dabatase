@@ -1,7 +1,7 @@
 import { addMinutes, subMinutes } from 'date-fns'
 import { v4 as uuidv4 } from 'uuid'
 import { describe, expect, it } from 'vitest'
-import { SERVICES } from '../../types/barber'
+import { SERVICES } from '../../@types/barber'
 import { Appointment } from './appointment'
 
 describe('Appointment Entity', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SERVICES, Service } from '../../types/barber'
+import { SERVICES, Service } from '../../@types/barber'
 import { Barber } from './barber'
 
 describe('Barber Entity', () => {

@@ -1,4 +1,4 @@
-import { Service } from '../../types/barber'
+import { Service } from '../../@types/barber'
 
 interface BarberProps {
   id: string

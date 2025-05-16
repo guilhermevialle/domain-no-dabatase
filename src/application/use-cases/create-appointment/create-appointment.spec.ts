@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { SERVICES } from '../../../@types/barber'
 import { Appointment } from '../../../domain/entities/appointment'
 import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
-import { SERVICES } from '../../../types/barber'
 import { getFutureDate } from '../../../utils/get-future-date'
 import { CreateAppointment } from './create-appointment'
 

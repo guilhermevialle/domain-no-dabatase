@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { SERVICES } from '../../../@types/barber'
 import { Barber } from '../../../domain/entities/barber'
-import { SERVICES } from '../../../types/barber'
 import { InMemoryBarberRepository } from './in-memory-barber-repository'
 
 describe('InMemoryBarberRepository', () => {

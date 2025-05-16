@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { SERVICES } from '../../types/barber'
+import { SERVICES } from '../../@types/barber'
 import { Service } from './service'
 
 describe('Service Value Object', () => {

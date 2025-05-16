@@ -1,4 +1,4 @@
-import { SERVICES, Service as TService } from '../../types/barber'
+import { SERVICES, Service as TService } from '../../@types/barber'
 
 interface ServiceProps {
   id: string

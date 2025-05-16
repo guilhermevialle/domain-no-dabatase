@@ -1,5 +1,5 @@
 import { differenceInMinutes, isBefore, isPast } from 'date-fns'
-import { Service, SERVICES } from '../../types/barber'
+import { Service, SERVICES } from '../../@types/barber'
 
 export type AppointmentStatus = 'CONFIRMED' | 'CANCELED'
 
