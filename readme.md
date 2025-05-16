@@ -1,6 +1,5 @@
 ## Problem
 
-Sou dono de uma pequena barbearia e quero organizar os agendamentos dos meus clientes. Atualmente, eles me mandam mensagem por WhatsApp, e eu anoto os horários em um caderno. Isso causa confusões com horários duplicados, esquecimentos e falta de controle sobre a agenda. Preciso de uma forma simples de cadastrar clientes e registrar os horários dos atendimentos, garantindo que não haja dois agendamentos no mesmo horário com o mesmo barbeiro.
 
 ## Implementation
 
