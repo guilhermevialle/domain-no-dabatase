@@ -1,19 +1,19 @@
 import { Appointment } from '../../../domain/entities/appointment'
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
 
-type GetAppointmentListRequest =
+type ListAppointmentsRequest =
   | { customerId: string; barberId?: never }
   | { barberId: string; customerId?: never }
 
-type GetAppointmentListResponse = Appointment[]
+type ListAppointmentsResponse = Appointment[]
 
-export class GetAppointmentList {
+export class ListAppointments {
   constructor(private appointmentRepo: IAppointmentRepository) {}
 
   async execute({
     barberId,
     customerId,
-  }: GetAppointmentListRequest): Promise<GetAppointmentListResponse> {
+  }: ListAppointmentsRequest): Promise<ListAppointmentsResponse> {
     if (customerId) return this.appointmentRepo.getAllByCustomerId(customerId)
     if (barberId) return this.appointmentRepo.getAllByBarberId(barberId)
 

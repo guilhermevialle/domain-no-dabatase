@@ -3,12 +3,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import { Appointment } from '../../../domain/entities/appointment'
 import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
-import { GetAppointmentList } from './get-appointments-list'
+import { ListAppointments } from './list-appointments'
 
-describe('GetAppointmentList', () => {
+describe('ListAppointments', () => {
   it('should return all appointments for a given barber', async () => {
     const repo = new InMemoryAppointmentRepository()
-    const useCase = new GetAppointmentList(repo)
+    const useCase = new ListAppointments(repo)
 
     const barberId = uuidv4()
     const now = new Date()
@@ -60,7 +60,7 @@ describe('GetAppointmentList', () => {
 
   it('should return all appointments for a given customer', async () => {
     const repo = new InMemoryAppointmentRepository()
-    const useCase = new GetAppointmentList(repo)
+    const useCase = new ListAppointments(repo)
 
     const customerId = uuidv4()
     const now = new Date()
@@ -112,7 +112,7 @@ describe('GetAppointmentList', () => {
 
   it('should throw if neither customerId nor barberId is provided', async () => {
     const repo = new InMemoryAppointmentRepository()
-    const useCase = new GetAppointmentList(repo)
+    const useCase = new ListAppointments(repo)
 
     // @ts-expect-error: testing invalid input
     await expect(useCase.execute({})).rejects.toThrow(
