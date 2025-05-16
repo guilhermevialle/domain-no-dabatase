@@ -8,5 +8,8 @@ export class InMemoryCustomerRepository implements ICustomerRepository {
     this.items.push(customer)
   }
 
-  async findByid(id: string): Promise<Customer | null> {}
+  async findByid(id: string): Promise<Customer | null> {
+    const customer = this.items.find((customer) => customer.id === id)
+    return customer ?? null
+  }
 }

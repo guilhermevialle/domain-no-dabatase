@@ -1,12 +1,12 @@
 import { v4 } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import { Email } from '../value-objects/email'
-import { Phone } from '../value-objects/phone'
+import { BrazilPhone } from '../value-objects/phone'
 import { Customer } from './customer'
 
 describe('Customer entity', () => {
   const validEmail = new Email('test@example.com')
-  const validPhone = new Phone('+5511912345678')
+  const validPhone = new BrazilPhone('+5527999950879')
 
   it('should create a Customer with all valid props and generate id if not provided', () => {
     const customer = new Customer({
@@ -19,7 +19,7 @@ describe('Customer entity', () => {
     expect(customer.id).toBeDefined()
     expect(customer.fullName).toBe('John Doe')
     expect(customer.email).toBe('test@example.com')
-    expect(customer.phone).toBe('+5511912345678')
+    expect(customer.phone).toBe('5527999950879')
   })
 
   it('should keep the provided id if given', () => {

@@ -1,11 +1,11 @@
 import { Email } from '../value-objects/email'
-import { Phone } from '../value-objects/phone'
+import { BrazilPhone } from '../value-objects/phone'
 
 interface CustomerProps {
   id: string
   fullName: string
   email: Email
-  phone: Phone
+  phone: BrazilPhone
 }
 
 export class Customer {
