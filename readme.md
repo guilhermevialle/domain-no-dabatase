@@ -1,31 +1,29 @@
-## Problem
+# Sistema de Agendamento e Avaliação de Barbeiros
 
+## Visão Geral
 
-## Implementation
+Este aplicativo gerencia agendamentos de barbeiros e avaliações de clientes. Ele suporta:
 
-This system models the domain with the following entities:
+* **Agendamento de consultas** com disponibilidade de barbeiros e horários
+* **Verificação de disponibilidade** para evitar reservas conflitantes
+* **Avaliações de clientes** para agendamentos concluídos com notas de estrelas
+* Validação robusta garantindo integridade de dados entre barbeiros, clientes e agendamentos
 
-* **Customer**: Represents a client of the barbershop.
-* **Barber**: Represents a barber with specialties and availability.
-* **Appointment**: Represents a scheduled service between a customer and a barber, with validation to avoid conflicts.
+---
 
-## Features
+## Principais Funcionalidades
 
-* Register customers and barbers.
-* Define barber specialties and weekly availability.
-* Create appointments with conflict detection (no double booking).
-* Cancel appointments respecting time restrictions.
-* Value objects for strong typing and validation (e.g., Time, Service).
+* Criar e gerenciar barbeiros, clientes, dias disponíveis e horários
+* Agendar consultas respeitando tempos de buffer e disponibilidade dos barbeiros
+* Permitir que clientes avaliem agendamentos (1 a 5 estrelas) após a conclusão
+* Impedir avaliações duplicadas e garantir correspondência entre participantes do agendamento
 
-## Tech Stack
+---
 
-* Backend: Node.js, TypeScript, NestJS (optional)
-* Testing: Vitest
-* Date handling: date-fns
+## Destaques da Arquitetura
 
-## Usage
-
-* Add barbers with their specialties and availability.
-* Customers can book appointments with available barbers.
-* The system ensures no overlapping appointments for the same barber.
-* Appointments can be canceled with business rules.
+* **Entidades de domínio limpas** para Agendamento, Barbeiro, Avaliação, etc.
+* **Casos de Uso** encapsulam a lógica de negócios (ex.: `RateAppointment`)
+* **Repositórios** abstraem o armazenamento de dados (em memória ou persistente)
+* **Serviços** gerenciam regras de negócios complexas, como verificações de disponibilidade
+* Escrito em TypeScript com tipagem forte e validação
