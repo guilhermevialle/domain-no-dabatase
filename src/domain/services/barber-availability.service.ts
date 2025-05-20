@@ -2,9 +2,9 @@ import { getDay } from 'date-fns'
 import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository'
 import { IAvailableDayRepository } from '../../interfaces/repositories/available-day-repository'
 import { ITimeSlotRepository } from '../../interfaces/repositories/time-slot-repository'
+import { IBarberAvailabilityService } from '../../interfaces/services/barber-availability-service'
 import { Barber } from '../entities/barber'
 import { Time } from '../value-objects/time'
-import { IBarberAvailabilityService } from './../../interfaces/services/barber-availability-service'
 
 export class BarberAvailabilityService implements IBarberAvailabilityService {
   constructor(

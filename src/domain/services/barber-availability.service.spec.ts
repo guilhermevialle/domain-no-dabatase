@@ -14,7 +14,7 @@ import { AvailableDay } from '../entities/available-day'
 import { Barber } from '../entities/barber'
 import { TimeSlot } from '../entities/time-slot'
 import { Time } from '../value-objects/time'
-import { BarberAvailabilityService } from './barber-availability-service'
+import { BarberAvailabilityService } from './barber-availability.service'
 
 describe('BarberAvailabilityService', () => {
   let barberAvailabilityService: IBarberAvailabilityService
