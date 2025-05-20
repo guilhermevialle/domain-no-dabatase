@@ -1,10 +1,10 @@
 import { addMinutes, differenceInMinutes, getDay, isPast } from 'date-fns'
 import { AppointmentStatus } from '../../@types/appointment'
 import {
-  Service,
-  SERVICES,
-  SERVICES_DURATION,
-  SERVICES_PRICE_IN_CENTS,
+  AVAILABLE_SERVICES,
+  AvailableService,
+  BASE_DURATIONS_IN_MINUTES,
+  BASE_PRICES_IN_CENTS,
 } from '../../@types/service'
 import { randomId } from '../../utils/random-id'
 import { Time } from '../value-objects/time'
@@ -22,7 +22,7 @@ type OptionalAppointmentProps = Partial<{
 interface RequiredAppointmentProps {
   customerId: string
   barberId: string
-  service: Service
+  service: AvailableService
   startAt: Date
 }
 
@@ -37,19 +37,22 @@ export class Appointment {
       ...props,
       id: props.id ?? randomId(),
       status: props.status ?? 'SCHEDULED',
-      duration: props.duration ?? SERVICES_DURATION[props.service],
-      priceInCents:
-        props.priceInCents ?? SERVICES_PRICE_IN_CENTS[props.service],
+      duration: props.duration ?? BASE_DURATIONS_IN_MINUTES[props.service],
+      priceInCents: props.priceInCents ?? BASE_PRICES_IN_CENTS[props.service],
       endAt: props.endAt ?? addMinutes(props.startAt, props.duration!),
       createdAt: props.createdAt ?? new Date(),
       updatedAt: props.updatedAt ?? new Date(),
     }
 
-    this.validate(props)
+    this.validate(this.props)
   }
 
   private validate(props: AppointmentProps) {
-    if (!Object.values(SERVICES).includes(this.props.service))
+    if (props.duration! % 5 !== 0) {
+      throw new Error('Duration must be a multiple of 5 minutes.')
+    }
+
+    if (!AVAILABLE_SERVICES.includes(props.service))
       throw new Error('Cannot create custom Appointment service.')
 
     if (isPast(props.startAt))

@@ -6,7 +6,6 @@ type OptionalTimeSlotProps = Partial<{
 }>
 
 interface RequiredTimeSlotProps {
-  id: string
   availableDayId: string
   start: Time
   end: Time
@@ -18,17 +17,20 @@ export class TimeSlot {
   private props: TimeSlotProps
 
   constructor(props: TimeSlotProps) {
-    this.props = props
+    this.props = {
+      ...props,
+      id: props.id || randomId(),
+    }
 
-    if (!this.props.id) this.props.id = randomId()
+    this.validate(this.props)
+  }
 
-    const { start, end } = this.props
-
-    if (start.value === end.value) {
+  private validate(props: TimeSlotProps) {
+    if (props.start.value === props.end.value) {
       throw new Error('Start and end times cannot be the same.')
     }
 
-    if (start.toMinutes() >= end.toMinutes()) {
+    if (props.start.toMinutes() >= props.end.toMinutes()) {
       throw new Error('Start time must be before end time.')
     }
   }

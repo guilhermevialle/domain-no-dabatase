@@ -1,4 +1,4 @@
-import { Service } from '../../@types/service'
+import { AvailableService } from '../../@types/service'
 import { randomId } from '../../utils/random-id'
 
 type OptionalBarberProps = Partial<{
@@ -8,7 +8,7 @@ type OptionalBarberProps = Partial<{
 interface RequiredBarberProps {
   since: Date
   fullName: string
-  services: Service[]
+  services: AvailableService[]
   bufferTimeMinutes?: number
 }
 
@@ -24,7 +24,7 @@ export class Barber {
       bufferTimeMinutes: props.bufferTimeMinutes ?? 10,
     }
 
-    this.validate(props)
+    this.validate(this.props)
   }
 
   private validate(props: BarberProps) {

@@ -25,28 +25,27 @@ export class BarberAvailabilityService implements IBarberAvailabilityService {
         'Invalid weekday. Must be between 0 (Sunday) and 6 (Saturday).'
       )
 
-    const isOverlappingWithAnotherAppointment =
+    const isSomeOverlapping =
       await this.appointmentRepo.isOverlappingByDateAndBarberId(
         barber.id!,
         startAt,
         endAt
       )
 
-    if (isOverlappingWithAnotherAppointment)
-      throw new Error('Barber is not available at this time.')
+    if (isSomeOverlapping) return false
 
     const availableDay = await this.availableDayRepo.findByWeekdayAndBarberId(
       barber.id!,
       weekday
     )
 
-    if (!availableDay) throw new Error('Barber is not available on this day.')
+    if (!availableDay) return false
 
     const timeSlots = await this.timeSlotRepo.findManyByAvailableDayId(
       availableDay.id!
     )
 
-    if (timeSlots.length === 0) throw new Error('Barber has no time slots.')
+    if (timeSlots.length === 0) return false
 
     const startTime = new Time(startAt)
 

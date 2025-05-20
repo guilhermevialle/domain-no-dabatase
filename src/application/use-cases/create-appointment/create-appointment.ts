@@ -1,4 +1,7 @@
-import { Service, SERVICES_DURATION } from '../../../@types/service'
+import {
+  AvailableService,
+  BASE_DURATIONS_IN_MINUTES,
+} from '../../../@types/service'
 import { Appointment } from '../../../domain/entities/appointment'
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository'
@@ -8,7 +11,7 @@ import { IBarberAvailabilityService } from '../../../interfaces/services/barber-
 interface CreateAppointmentRequest {
   customerId: string
   barberId: string
-  service: Service
+  service: AvailableService
   startAt: Date
 }
 
@@ -34,20 +37,21 @@ export class CreateAppointment {
     if (!customer) throw new Error('Customer not found.')
     if (!barber) throw new Error('Barber not found.')
 
-    const isAvailable = await this.barberAvailability.isBarberAvailable(
-      barber,
-      startAt
-    )
-
-    if (!isAvailable) throw new Error('Barber is not available at this time.')
-
     const appointment = new Appointment({
       barberId,
       customerId,
       service,
       startAt,
-      duration: SERVICES_DURATION[service] + barber.bufferTimeMinutes,
+      duration: BASE_DURATIONS_IN_MINUTES[service] + barber.bufferTimeMinutes!,
     })
+
+    const isAvailable = await this.barberAvailability.isBarberAvailable(
+      barber,
+      startAt,
+      appointment.endAt
+    )
+
+    if (!isAvailable) throw new Error('Barber is not available at this time.')
 
     await this.appointmentRepo.create(appointment)
     return appointment

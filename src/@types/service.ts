@@ -1,40 +1,50 @@
-export const SERVICES = {
-  beard_trim: 'Beard Trim',
-  clean_shave: 'Clean Shave',
-  fade_cut: 'Fade Cut',
-  classic_haircut: 'Classic Haircut',
-  modern_haircut: 'Modern Haircut',
-  hair_coloring: 'Hair Coloring',
-  scalp_treatment: 'Scalp Treatment',
-  eyebrow_trim: 'Eyebrow Trim',
-  kids_haircut: 'Kids Haircut',
-  hair_washing: 'Hair Washing',
-} as const
+export type AvailableService =
+  | 'Beard Trim'
+  | 'Clean Shave'
+  | 'Fade Cut'
+  | 'Classic Haircut'
+  | 'Modern Haircut'
+  | 'Hair Coloring'
+  | 'Scalp Treatment'
+  | 'Eyebrow Trim'
+  | 'Kids Haircut'
+  | 'Hair Washing'
 
-export const SERVICES_DURATION: Record<Service, number> = {
+export const AVAILABLE_SERVICES: AvailableService[] = [
+  'Beard Trim',
+  'Clean Shave',
+  'Fade Cut',
+  'Classic Haircut',
+  'Modern Haircut',
+  'Hair Coloring',
+  'Scalp Treatment',
+  'Eyebrow Trim',
+  'Kids Haircut',
+  'Hair Washing',
+] as const
+
+export const BASE_DURATIONS_IN_MINUTES: Record<AvailableService, number> = {
   'Beard Trim': 15,
   'Clean Shave': 20,
   'Fade Cut': 40,
   'Classic Haircut': 30,
-  'Modern Haircut': 35,
-  'Hair Coloring': 90,
-  'Scalp Treatment': 25,
+  'Modern Haircut': 30,
+  'Hair Coloring': 60,
+  'Scalp Treatment': 45,
   'Eyebrow Trim': 10,
   'Kids Haircut': 25,
-  'Hair Washing': 10,
+  'Hair Washing': 15,
 }
 
-export type Service = (typeof SERVICES)[keyof typeof SERVICES]
-
-export const SERVICES_PRICE_IN_CENTS: Record<Service, number> = {
-  'Beard Trim': 2500,
-  'Clean Shave': 3000,
-  'Fade Cut': 4500,
-  'Classic Haircut': 3500,
-  'Modern Haircut': 4000,
-  'Hair Coloring': 9000,
-  'Scalp Treatment': 3000,
-  'Eyebrow Trim': 1500,
-  'Kids Haircut': 3000,
-  'Hair Washing': 1000,
+export const BASE_PRICES_IN_CENTS: Record<AvailableService, number> = {
+  'Beard Trim': 2000, // $20.00
+  'Clean Shave': 2500, // $25.00
+  'Fade Cut': 3000, // $30.00
+  'Classic Haircut': 3000, // $30.00
+  'Modern Haircut': 3500, // $35.00
+  'Hair Coloring': 6000, // $60.00
+  'Scalp Treatment': 4500, // $45.00
+  'Eyebrow Trim': 1500, // $15.00
+  'Kids Haircut': 2500, // $25.00
+  'Hair Washing': 1500, // $15.00
 }

@@ -2,7 +2,15 @@ import { Barber } from '../../../domain/entities/barber'
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository'
 
 export class InMemoryBarberRepository implements IBarberRepository {
-  private storage: Barber[] = []
+  private storage: Barber[] = [
+    new Barber({
+      id: 'barber-1',
+      since: new Date('2023-01-15'),
+      fullName: 'John Doe',
+      services: ['Beard Trim', 'Kids Haircut', 'Hair Washing'],
+      bufferTimeMinutes: 15,
+    }),
+  ]
 
   async create(barber: Barber): Promise<void> {
     this.storage.push(barber)
