@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Rating } from './Rating'
+import { Rating } from './rating'
 
 describe('Rating entity', () => {
   it('should create a valid rating with required fields and default comment', () => {
@@ -12,7 +12,7 @@ describe('Rating entity', () => {
 
     expect(rating).toBeInstanceOf(Rating)
     expect(rating.rating).toBe(4)
-    expect(rating.comment).toBe('') // default empty string
+    expect(rating.comment).toBe('')
     expect(rating.appointmentId).toBe('appointment-1')
   })
 

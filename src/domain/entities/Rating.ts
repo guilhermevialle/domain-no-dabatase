@@ -6,7 +6,7 @@ type OptionalRatingProps = Partial<{
   createdAt: Date
 }>
 
-interface RequiredRatingProps {
+export interface RequiredRatingProps {
   appointmentId: string
   barberId: string
   customerId: string
