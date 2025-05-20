@@ -59,7 +59,7 @@ export class Appointment {
       throw new Error('Start date must be in the future.')
   }
 
-  public touch() {
+  private touch() {
     this.props.updatedAt = new Date()
   }
 
@@ -78,6 +78,21 @@ export class Appointment {
       )
 
     this.props.status = 'CANCELED'
+    this.touch()
+  }
+
+  public reschedule(newStartAt: Date) {
+    if (isPast(newStartAt)) throw new Error('Start date must be in the future.')
+
+    const minutesUntilStart = differenceInMinutes(newStartAt, new Date())
+
+    if (minutesUntilStart < 10)
+      throw new Error(
+        'Cannot reschedule appointment less than 10 minutes before the start time.'
+      )
+
+    this.props.startAt = newStartAt
+    this.props.endAt = addMinutes(newStartAt, this.props.duration!)
     this.touch()
   }
 
