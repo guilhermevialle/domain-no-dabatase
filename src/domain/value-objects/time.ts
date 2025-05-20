@@ -20,6 +20,24 @@ export class Time {
     this._value = value
   }
 
+  public isUnderThan(other: Time): boolean {
+    const [thisHours, thisMinutes] = this._value.split(':').map(Number)
+    const [otherHours, otherMinutes] = other.value.split(':').map(Number)
+    return (
+      thisHours < otherHours ||
+      (thisHours === otherHours && thisMinutes < otherMinutes)
+    )
+  }
+
+  public isOverThan(other: Time): boolean {
+    const [thisHours, thisMinutes] = this._value.split(':').map(Number)
+    const [otherHours, otherMinutes] = other.value.split(':').map(Number)
+    return (
+      thisHours > otherHours ||
+      (thisHours === otherHours && thisMinutes > otherMinutes)
+    )
+  }
+
   static isValidFormat(value: string): boolean {
     return /^\d{2}:\d{2}$/.test(value)
   }

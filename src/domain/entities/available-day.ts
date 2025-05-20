@@ -4,7 +4,6 @@ type OptionalAvailableDayProps = Partial<{
   id: string
 }>
 interface RequiredAvailableDayProps {
-  id: string
   barberId: string
   weekday: number
 }

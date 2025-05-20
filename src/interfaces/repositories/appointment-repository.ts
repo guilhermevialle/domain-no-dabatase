@@ -6,4 +6,9 @@ export interface IAppointmentRepository {
   findById: (id: string) => Promise<Appointment | null>
   findManyByBarberId: (id: string) => Promise<Appointment[]>
   findManyByCustomerId: (id: string) => Promise<Appointment[]>
+  isOverlappingByDateAndBarberId: (
+    barberId: string,
+    startAt: Date,
+    endAt: Date
+  ) => Promise<boolean>
 }

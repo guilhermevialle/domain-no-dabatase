@@ -11,51 +11,49 @@ import { Time } from '../value-objects/time'
 
 type OptionalAppointmentProps = Partial<{
   id: string
-  estimatedDurationMinutes: number
+  duration: number
   priceInCents: number
   createdAt: Date
+  status: AppointmentStatus
   updatedAt: Date
+  endAt: Date
 }>
 
 interface RequiredAppointmentProps {
   customerId: string
   barberId: string
   service: Service
-  status: AppointmentStatus
   startAt: Date
 }
 
-type AppointmentProps = OptionalAppointmentProps & RequiredAppointmentProps
+export type AppointmentProps = RequiredAppointmentProps &
+  OptionalAppointmentProps
 
 export class Appointment {
   private props: AppointmentProps
 
   constructor(props: AppointmentProps) {
-    this.props = props
+    this.props = {
+      ...props,
+      id: props.id ?? randomId(),
+      status: props.status ?? 'SCHEDULED',
+      duration: props.duration ?? SERVICES_DURATION[props.service],
+      priceInCents:
+        props.priceInCents ?? SERVICES_PRICE_IN_CENTS[props.service],
+      endAt: props.endAt ?? addMinutes(props.startAt, props.duration!),
+      createdAt: props.createdAt ?? new Date(),
+      updatedAt: props.updatedAt ?? new Date(),
+    }
 
-    if (!this.props.createdAt) this.props.createdAt = new Date()
-    if (!this.props.updatedAt) this.props.updatedAt = new Date()
-    if (this.props.id) this.props.id = randomId()
+    this.validate(props)
+  }
 
-    if (!this.props.estimatedDurationMinutes)
-      this.props.estimatedDurationMinutes =
-        SERVICES_DURATION[this.props.service]
-
-    if (!this.props.priceInCents)
-      this.props.priceInCents = SERVICES_PRICE_IN_CENTS[this.props.service]
-
-    const { startAt, estimatedDurationMinutes } = this.props
-
+  private validate(props: AppointmentProps) {
     if (!Object.values(SERVICES).includes(this.props.service))
       throw new Error('Cannot create custom Appointment service.')
 
-    if (estimatedDurationMinutes % 5 !== 0)
-      throw new Error('Estimated duration must be in 5-minute increments.')
-
-    if (isPast(startAt)) throw new Error('Start date must be in the future.')
-
-    if (estimatedDurationMinutes <= 0)
-      throw new Error('Estimated duration must be greater than 0.')
+    if (isPast(props.startAt))
+      throw new Error('Start date must be in the future.')
   }
 
   public touch() {
@@ -89,10 +87,7 @@ export class Appointment {
   }
 
   public toJSON() {
-    return {
-      ...this.props,
-      endAt: this.endAt,
-    }
+    return this.props
   }
 
   // getters
@@ -125,11 +120,11 @@ export class Appointment {
   }
 
   get estimatedDurationMinutes() {
-    return this.props.estimatedDurationMinutes
+    return this.props.duration
   }
 
   get endAt() {
-    return addMinutes(this.props.startAt, this.props.estimatedDurationMinutes!)
+    return addMinutes(this.props.startAt, this.props.duration!)
   }
 
   get createdAt() {

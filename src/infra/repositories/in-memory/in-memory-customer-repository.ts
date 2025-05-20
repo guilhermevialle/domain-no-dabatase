@@ -9,12 +9,17 @@ export class InMemoryCustomerRepository implements ICustomerRepository {
   }
 
   async update(customer: Customer): Promise<void> {
-    const index = this.storage.findIndex((c) => c.id === customer.id)
+    const index = this.storage.findIndex(
+      (customer) => customer.id === customer.id
+    )
+
     if (index === -1) throw new Error('Customer not found')
+
     this.storage[index] = customer
   }
 
   async findById(id: string): Promise<Customer | null> {
-    return this.storage.find((c) => c.id === id) ?? null
+    const result = this.storage.find((customer) => customer.id === id)
+    return result ?? null
   }
 }

@@ -6,7 +6,6 @@ type OptionalCustomerProps = Partial<{
   id: string
 }>
 interface RequiredCustomerProps {
-  id: string
   fullName: string
   email: Email
   phone: BrazilPhone
