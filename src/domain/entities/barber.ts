@@ -63,7 +63,7 @@ export class Barber {
     return this.props.services
   }
 
-  get bufferTimeMinutes() {
+  get bufferMinutes() {
     return this.props.bufferMinutes
   }
 }

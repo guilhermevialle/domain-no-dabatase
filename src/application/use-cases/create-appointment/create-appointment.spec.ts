@@ -1,11 +1,14 @@
-import { addMinutes } from 'date-fns'
+import { addMinutes, getDay } from 'date-fns'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { Appointment } from '../../../domain/entities/appointment'
+import { AvailableDay } from '../../../domain/entities/available-day'
 import { Barber } from '../../../domain/entities/barber'
 import { Customer } from '../../../domain/entities/customer'
+import { TimeSlot } from '../../../domain/entities/time-slot'
 import { BarberAvailabilityService } from '../../../domain/services/barber-availability-service'
 import { Email } from '../../../domain/value-objects/email'
 import { BrazilPhone } from '../../../domain/value-objects/phone'
+import { Time } from '../../../domain/value-objects/time'
 import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
 import { InMemoryAvailableDayRepository } from '../../../infra/repositories/in-memory/in-memory-available-day-repository'
 import { InMemoryBarberRepository } from '../../../infra/repositories/in-memory/in-memory-barber-repository'
@@ -42,6 +45,35 @@ describe('CreateAppointmentUseCase', () => {
   })
 
   it('should create an appointment successfully', async () => {
+    await barberRepo.create(
+      new Barber({
+        id: 'barber-5',
+        fullName: 'John Doe',
+        since: new Date('2020-01-01'),
+        services: ['Beard Trim'],
+        bufferMinutes: 10,
+      })
+    )
+
+    const appointmentStart = addMinutes(new Date(), 10)
+    const weekday = getDay(appointmentStart)
+
+    await availableDayRepo.create(
+      new AvailableDay({
+        id: 'available-day-5',
+        barberId: 'barber-5',
+        weekday: weekday,
+      })
+    )
+
+    await timeSlotRepo.create(
+      new TimeSlot({
+        availableDayId: 'available-day-5',
+        start: new Time('00:00'),
+        end: new Time('23:59'),
+      })
+    )
+
     await customerRepo.create(
       new Customer({
         id: 'customer-3',
@@ -52,10 +84,10 @@ describe('CreateAppointmentUseCase', () => {
     )
 
     await useCase.execute({
-      barberId: 'barber-1',
+      barberId: 'barber-5',
       customerId: 'customer-3',
       service: 'Beard Trim',
-      startAt: addMinutes(new Date(), 10),
+      startAt: appointmentStart,
     })
   })
 

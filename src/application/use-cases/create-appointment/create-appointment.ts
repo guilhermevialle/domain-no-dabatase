@@ -39,8 +39,7 @@ export class CreateAppointment {
     if (!barber.canDoService(service))
       throw new Error(`Barber does not provide the service ${service}.`)
 
-    const duration =
-      BASE_DURATIONS_IN_MINUTES[service] + barber.bufferTimeMinutes!
+    const duration = BASE_DURATIONS_IN_MINUTES[service] + barber.bufferMinutes!
 
     const appointment = new Appointment({
       barberId,
