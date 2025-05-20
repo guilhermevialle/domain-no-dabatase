@@ -1,6 +1,6 @@
 {
   "name": "concept-api",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "main": "index.js",
   "scripts": {
     "dev": "tsnd --transpile-only --respawn --clear --quiet src/server.ts",
