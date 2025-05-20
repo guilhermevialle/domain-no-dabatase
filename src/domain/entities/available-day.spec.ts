@@ -14,7 +14,11 @@ describe('AvailableDay Entity', () => {
 
   it('throws if weekday is invalid', () => {
     expect(() => {
-      new AvailableDay({ id: '1', barberId: 'b1', weekday: 8 })
+      new AvailableDay({
+        id: '1',
+        barberId: 'b1',
+        weekday: 8,
+      })
     }).toThrow('Weekday must be between 0 (Sunday) and 6 (Saturday).')
   })
 })

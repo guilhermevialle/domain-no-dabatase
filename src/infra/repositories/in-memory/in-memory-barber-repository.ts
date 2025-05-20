@@ -8,7 +8,7 @@ export class InMemoryBarberRepository implements IBarberRepository {
       since: new Date('2023-01-15'),
       fullName: 'John Doe',
       services: ['Beard Trim', 'Kids Haircut', 'Hair Washing'],
-      bufferTimeMinutes: 15,
+      bufferMinutes: 15,
     }),
   ]
 

@@ -122,7 +122,7 @@ export class Appointment {
     return this.props.startAt
   }
 
-  get estimatedDurationMinutes() {
+  get duration() {
     return this.props.duration
   }
 

@@ -12,14 +12,14 @@ export const barbers: Barber[] = [
       'Hair Washing',
       'Hair Coloring',
     ],
-    bufferTimeMinutes: 15,
+    bufferMinutes: 15,
   }),
   new Barber({
     id: 'barber-2',
     fullName: 'Batista',
     since: new Date('1980-01-10'),
     services: ['Fade Cut', 'Modern Haircut', 'Clean Shave', 'Beard Trim'],
-    bufferTimeMinutes: 10,
+    bufferMinutes: 10,
   }),
   new Barber({
     id: 'barber-3',
@@ -34,6 +34,6 @@ export const barbers: Barber[] = [
       'Eyebrow Trim',
       'Scalp Treatment',
     ],
-    bufferTimeMinutes: 15,
+    bufferMinutes: 15,
   }),
 ]

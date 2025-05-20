@@ -9,7 +9,7 @@ interface RequiredBarberProps {
   since: Date
   fullName: string
   services: AvailableService[]
-  bufferTimeMinutes?: number
+  bufferMinutes?: number
 }
 
 type BarberProps = OptionalBarberProps & RequiredBarberProps
@@ -21,7 +21,7 @@ export class Barber {
     this.props = {
       ...props,
       id: props.id || randomId(),
-      bufferTimeMinutes: props.bufferTimeMinutes ?? 10,
+      bufferMinutes: props.bufferMinutes ?? 10,
     }
 
     this.validate(this.props)
@@ -30,10 +30,10 @@ export class Barber {
   private validate(props: BarberProps) {
     const servicesSet = new Set(props.services)
 
-    if (this.props.bufferTimeMinutes! % 5 !== 0)
+    if (this.props.bufferMinutes! % 5 !== 0)
       throw new Error('Buffer time must be in 5-minute increments.')
 
-    if (this.props.bufferTimeMinutes! > 30 || this.props.bufferTimeMinutes! < 5)
+    if (this.props.bufferMinutes! > 30 || this.props.bufferMinutes! < 5)
       throw new Error('Buffer time must be between 5 and 30 minutes.')
 
     if (servicesSet.size < 1) throw new Error('Must have at least 1 specialty.')
@@ -60,6 +60,6 @@ export class Barber {
   }
 
   get bufferTimeMinutes() {
-    return this.props.bufferTimeMinutes
+    return this.props.bufferMinutes
   }
 }
