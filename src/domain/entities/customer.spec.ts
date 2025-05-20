@@ -1,48 +1,19 @@
-import { v4 } from 'uuid'
 import { describe, expect, it } from 'vitest'
 import { Email } from '../value-objects/email'
 import { BrazilPhone } from '../value-objects/phone'
 import { Customer } from './customer'
 
-describe('Customer entity', () => {
-  const validEmail = new Email('test@example.com')
-  const validPhone = new BrazilPhone('+5527999950879')
-
-  it('should create a Customer with all valid props and generate id if not provided', () => {
+describe('Customer Entity', () => {
+  it('should create a valid customer', () => {
     const customer = new Customer({
-      id: v4(),
-      fullName: 'John Doe',
-      email: validEmail,
-      phone: validPhone,
+      id: '1',
+      fullName: 'Customer Test',
+      email: new Email('test@example.com'),
+      phone: new BrazilPhone('+5511999999999'),
     })
 
-    expect(customer.id).toBeDefined()
-    expect(customer.fullName).toBe('John Doe')
+    expect(customer.fullName).toBe('Customer Test')
     expect(customer.email).toBe('test@example.com')
-    expect(customer.phone).toBe('5527999950879')
-  })
-
-  it('should keep the provided id if given', () => {
-    const customId = v4()
-    const customer = new Customer({
-      id: customId,
-      fullName: 'Jane Smith',
-      email: validEmail,
-      phone: validPhone,
-    })
-
-    expect(customer.id).toBe(customId)
-  })
-
-  it('email and phone getters should return their underlying values', () => {
-    const customer = new Customer({
-      id: v4(),
-      fullName: 'Alice',
-      email: validEmail,
-      phone: validPhone,
-    })
-
-    expect(customer.email).toBe(validEmail.value)
-    expect(customer.phone).toBe(validPhone.value)
+    expect(customer.phone).toBe('5511999999999')
   })
 })

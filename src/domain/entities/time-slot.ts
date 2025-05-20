@@ -1,17 +1,28 @@
+import { randomId } from '../../utils/random-id'
 import { Time } from '../value-objects/time'
 
-interface AvailableSlotProps {
+type OptionalTimeSlotProps = Partial<{
+  id: string
+}>
+
+interface RequiredTimeSlotProps {
   id: string
   availableDayId: string
   start: Time
   end: Time
 }
 
-export class AvailableSlot {
-  private props: AvailableSlotProps
+type TimeSlotProps = OptionalTimeSlotProps & RequiredTimeSlotProps
 
-  constructor(props: AvailableSlotProps) {
-    const { start, end } = props
+export class TimeSlot {
+  private props: TimeSlotProps
+
+  constructor(props: TimeSlotProps) {
+    this.props = props
+
+    if (!this.props.id) this.props.id = randomId()
+
+    const { start, end } = this.props
 
     if (start.value === end.value) {
       throw new Error('Start and end times cannot be the same.')
@@ -20,8 +31,6 @@ export class AvailableSlot {
     if (start.toMinutes() >= end.toMinutes()) {
       throw new Error('Start time must be before end time.')
     }
-
-    this.props = props
   }
 
   get id() {

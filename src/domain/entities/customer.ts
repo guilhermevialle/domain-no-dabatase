@@ -1,18 +1,25 @@
+import { randomId } from '../../utils/random-id'
 import { Email } from '../value-objects/email'
 import { BrazilPhone } from '../value-objects/phone'
 
-interface CustomerProps {
+type OptionalCustomerProps = Partial<{
+  id: string
+}>
+interface RequiredCustomerProps {
   id: string
   fullName: string
   email: Email
   phone: BrazilPhone
 }
 
+type CustomerProps = OptionalCustomerProps & RequiredCustomerProps
 export class Customer {
   private props: CustomerProps
 
   constructor(props: CustomerProps) {
     this.props = props
+
+    if (!this.props.id) this.props.id = randomId()
   }
 
   get id() {

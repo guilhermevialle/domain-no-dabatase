@@ -1,7 +1,12 @@
 export class Time {
   private _value: string
 
-  constructor(value: string) {
+  constructor(value: string | Date) {
+    if (value instanceof Date) {
+      this._value = Time.fromDate(value)
+      return
+    }
+
     if (!Time.isValidFormat(value)) {
       throw new Error('Invalid time format. Expected HH:MM in 24-hour format.')
     }
@@ -17,6 +22,12 @@ export class Time {
 
   static isValidFormat(value: string): boolean {
     return /^\d{2}:\d{2}$/.test(value)
+  }
+
+  static fromDate(date: Date): string {
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    return `${hours}:${minutes}`
   }
 
   public toMinutes(): number {

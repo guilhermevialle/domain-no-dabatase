@@ -1,18 +1,27 @@
-interface AvailableDayProps {
+import { randomId } from '../../utils/random-id'
+
+type OptionalAvailableDayProps = Partial<{
+  id: string
+}>
+interface RequiredAvailableDayProps {
   id: string
   barberId: string
   weekday: number
 }
 
+type AvailableDayProps = OptionalAvailableDayProps & RequiredAvailableDayProps
+
 export class AvailableDay {
   private props: AvailableDayProps
 
   constructor(props: AvailableDayProps) {
-    if (props.weekday < 0 || props.weekday > 6) {
+    this.props = props
+
+    if (!this.props.id) this.props.id = randomId()
+
+    if (this.props.weekday < 0 || this.props.weekday > 6) {
       throw new Error('Weekday must be between 0 (Sunday) and 6 (Saturday).')
     }
-
-    this.props = props
   }
 
   get id() {

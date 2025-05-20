@@ -1,38 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import { SERVICES } from '../../@types/barber'
+import { SERVICES } from '../../@types/service'
 import { Service } from './service'
 
-describe('Service Value Object', () => {
-  it('should create a valid Service instance', () => {
+describe('Service Entity', () => {
+  it('should create a valid service', () => {
     const service = new Service({
-      id: 'service-1',
       name: SERVICES.beard_trim,
+      price: 3500,
     })
 
-    expect(service).toBeInstanceOf(Service)
-    expect(service.id).toBe('service-1')
     expect(service.name).toBe(SERVICES.beard_trim)
+    expect(service.price).toBe(3500)
   })
 
-  it('should throw error if invalid service name is provided', () => {
+  it('should throw if service name is invalid', () => {
     expect(() => {
       new Service({
-        id: 'service-2',
-        // @ts-expect-error testing invalid name
-        name: 'Invalid Service',
+        name: 'INVALID' as any,
+        price: 1000,
       })
-    }).toThrowError('Invalid service name: Invalid Service')
-  })
-
-  it('should return correct JSON representation', () => {
-    const service = new Service({
-      id: 'service-3',
-      name: SERVICES.clean_shave,
-    })
-
-    expect(service.toJSON()).toEqual({
-      id: 'service-3',
-      name: SERVICES.clean_shave,
-    })
+    }).toThrow('Invalid service name: INVALID')
   })
 })

@@ -1,50 +1,48 @@
 import { describe, expect, it } from 'vitest'
-import { SERVICES, Service } from '../../@types/barber'
+import { SERVICES } from '../../@types/service'
 import { Barber } from './barber'
 
 describe('Barber Entity', () => {
-  const baseProps = {
-    id: 'barber-123',
-    since: new Date('2020-01-01'),
-    fullName: 'John Doe',
-  }
-
-  it('should create a barber with valid specialties', () => {
-    const services: Service[] = [
-      SERVICES.beard_trim,
-      SERVICES.clean_shave,
-      SERVICES.fade_cut,
-    ]
-
+  it('should create a valid barber', () => {
     const barber = new Barber({
-      ...baseProps,
-      services,
+      since: new Date(),
+      fullName: 'John Doe',
+      services: [SERVICES.hair_coloring, SERVICES.beard_trim],
+      bufferTimeMinutes: 15,
     })
 
-    expect(barber.fullName).toBe(baseProps.fullName)
-    expect(barber.id).toBe(baseProps.id)
+    expect(barber.fullName).toBe('John Doe')
   })
 
-  it('should throw an error if specialties contain duplicates', () => {
-    const specialtiesWithDuplicates: Service[] = [
-      SERVICES.beard_trim,
-      SERVICES.beard_trim,
-      SERVICES.fade_cut,
-    ]
-
+  it('should throw if bufferTimeMinutes is less than 10 or greater than 20', () => {
     expect(() => {
       new Barber({
-        ...baseProps,
-        services: specialtiesWithDuplicates,
+        since: new Date(),
+        fullName: 'Jane',
+        services: [SERVICES.hair_coloring],
+        bufferTimeMinutes: 25,
       })
-    }).toThrow('Duplicate specialties are not allowed.')
+    }).toThrow('Buffer time must be between 10 and 20 minutes.')
   })
 
-  it('should throw an error if specialties array is empty', () => {
+  it('should throw if duplicate services are provided', () => {
     expect(() => {
       new Barber({
-        ...baseProps,
+        since: new Date(),
+        fullName: 'Jane',
+        services: [SERVICES.hair_coloring, SERVICES.hair_coloring],
+        bufferTimeMinutes: 15,
+      })
+    }).toThrow('Duplicate services are not allowed.')
+  })
+
+  it('should throw if no services are provided', () => {
+    expect(() => {
+      new Barber({
+        since: new Date(),
+        fullName: 'Jane',
         services: [],
+        bufferTimeMinutes: 15,
       })
     }).toThrow('Must have at least 1 specialty.')
   })

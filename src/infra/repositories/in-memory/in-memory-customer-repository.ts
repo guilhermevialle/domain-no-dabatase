@@ -2,14 +2,19 @@ import { Customer } from '../../../domain/entities/customer'
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository'
 
 export class InMemoryCustomerRepository implements ICustomerRepository {
-  private items: Customer[] = []
+  private storage: Customer[] = []
 
   async create(customer: Customer): Promise<void> {
-    this.items.push(customer)
+    this.storage.push(customer)
   }
 
-  async findByid(id: string): Promise<Customer | null> {
-    const customer = this.items.find((customer) => customer.id === id)
-    return customer ?? null
+  async update(customer: Customer): Promise<void> {
+    const index = this.storage.findIndex((c) => c.id === customer.id)
+    if (index === -1) throw new Error('Customer not found')
+    this.storage[index] = customer
+  }
+
+  async findById(id: string): Promise<Customer | null> {
+    return this.storage.find((c) => c.id === id) ?? null
   }
 }

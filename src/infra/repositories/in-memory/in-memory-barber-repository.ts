@@ -1,17 +1,20 @@
-import { barbers } from '../../../constants/barbers'
 import { Barber } from '../../../domain/entities/barber'
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository'
 
 export class InMemoryBarberRepository implements IBarberRepository {
-  private items: Barber[] = barbers
+  private storage: Barber[] = []
 
   async create(barber: Barber): Promise<void> {
-    this.items.push(barber)
+    this.storage.push(barber)
+  }
+
+  async update(barber: Barber): Promise<void> {
+    const index = this.storage.findIndex((b) => b.id === barber.id)
+    if (index === -1) throw new Error('Barber not found')
+    this.storage[index] = barber
   }
 
   async findById(id: string): Promise<Barber | null> {
-    const barber = this.items.find((barber) => barber.id === id)
-
-    return barber ?? null
+    return this.storage.find((b) => b.id === id) ?? null
   }
 }
