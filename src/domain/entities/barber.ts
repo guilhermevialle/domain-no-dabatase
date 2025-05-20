@@ -27,6 +27,10 @@ export class Barber {
     this.validate(this.props)
   }
 
+  public canDoService(service: AvailableService): boolean {
+    return this.props.services.includes(service)
+  }
+
   private validate(props: BarberProps) {
     const servicesSet = new Set(props.services)
 

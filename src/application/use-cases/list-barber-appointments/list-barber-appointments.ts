@@ -19,7 +19,7 @@ export class ListBarberAppointments {
   }: ListBarberAppointmentsRequest): Promise<ListBarberAppointmentsResponse> {
     const barber = await this.barberRepo.findById(id)
 
-    if (!barber) throw new Error('barber not found.')
+    if (!barber) throw new Error('Barber not found.')
 
     const appointments = await this.appointmentRepo.findManyByBarberId(id)
 

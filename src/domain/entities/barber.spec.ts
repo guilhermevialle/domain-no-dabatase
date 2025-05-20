@@ -9,6 +9,16 @@ describe('Barber', () => {
     services: [AVAILABLE_SERVICES[0]],
   }
 
+  it('should return true if canDoService is called with a valid service', () => {
+    const barber = new Barber(validProps)
+    expect(barber.canDoService(AVAILABLE_SERVICES[0])).toBe(true)
+  })
+
+  it('should return false if canDoService is called with an invalid service', () => {
+    const barber = new Barber(validProps)
+    expect(barber.canDoService(AVAILABLE_SERVICES[1])).toBe(false)
+  })
+
   it('should create a Barber with default bufferTimeMinutes = 10', () => {
     const barber = new Barber(validProps)
     expect(barber.bufferTimeMinutes).toBe(10)

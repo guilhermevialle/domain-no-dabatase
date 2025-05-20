@@ -36,24 +36,30 @@ export class CreateAppointment {
 
     if (!customer) throw new Error('Customer not found.')
     if (!barber) throw new Error('Barber not found.')
+    if (!barber.canDoService(service))
+      throw new Error(`Barber does not provide the service ${service}.`)
+
+    const duration =
+      BASE_DURATIONS_IN_MINUTES[service] + barber.bufferTimeMinutes!
 
     const appointment = new Appointment({
       barberId,
       customerId,
       service,
       startAt,
-      duration: BASE_DURATIONS_IN_MINUTES[service] + barber.bufferTimeMinutes!,
+      duration,
     })
 
     const isAvailable = await this.barberAvailability.isBarberAvailable(
       barber,
-      startAt,
+      appointment.startAt,
       appointment.endAt
     )
 
     if (!isAvailable) throw new Error('Barber is not available at this time.')
 
     await this.appointmentRepo.create(appointment)
+
     return appointment
   }
 }
