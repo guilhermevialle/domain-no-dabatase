@@ -78,7 +78,7 @@ describe('BarberAvailabilityService', () => {
     })
 
     const isBarberAvailable = await barberAvailabilityService.isBarberAvailable(
-      barber,
+      barber.id!,
       appointment1.startAt,
       appointment1.endAt
     )
@@ -100,7 +100,7 @@ describe('BarberAvailabilityService', () => {
     await appointmentRepo.create(appointment1)
 
     const isBarberAvailable = await barberAvailabilityService.isBarberAvailable(
-      barber,
+      barber.id!,
       appointment1.startAt,
       appointment1.endAt
     )

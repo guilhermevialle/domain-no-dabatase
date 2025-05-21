@@ -81,18 +81,18 @@ export class Appointment {
     this.touch()
   }
 
-  public reschedule(newStartAt: Date) {
-    if (isPast(newStartAt)) throw new Error('Start date must be in the future.')
+  public reschedule(startAt: Date) {
+    if (isPast(startAt)) throw new Error('Start date must be in the future.')
 
-    const minutesUntilStart = differenceInMinutes(newStartAt, new Date())
+    const minutesUntilStart = differenceInMinutes(startAt, new Date())
 
     if (minutesUntilStart < 10)
       throw new Error(
         'Cannot reschedule appointment less than 10 minutes before the start time.'
       )
 
-    this.props.startAt = newStartAt
-    this.props.endAt = addMinutes(newStartAt, this.props.duration!)
+    this.props.startAt = startAt
+    this.props.endAt = addMinutes(startAt, this.props.duration!)
     this.touch()
   }
 

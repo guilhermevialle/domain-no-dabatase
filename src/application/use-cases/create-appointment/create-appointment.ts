@@ -50,7 +50,7 @@ export class CreateAppointment {
     })
 
     const isAvailable = await this.barberAvailability.isBarberAvailable(
-      barber,
+      barber.id!,
       appointment.startAt,
       appointment.endAt
     )

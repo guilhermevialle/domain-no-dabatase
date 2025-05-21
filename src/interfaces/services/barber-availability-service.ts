@@ -1,9 +1,8 @@
-import { Barber } from '../../domain/entities/barber'
-
 export interface IBarberAvailabilityService {
   isBarberAvailable(
-    barber: Barber,
+    barberId: string,
     startAt: Date,
-    endAt: Date
+    endAt: Date,
+    ignoreAppointmentId?: string
   ): Promise<boolean>
 }

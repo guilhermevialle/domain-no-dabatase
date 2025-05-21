@@ -9,6 +9,7 @@ export interface IAppointmentRepository {
   isOverlappingByDateAndBarberId: (
     barberId: string,
     startAt: Date,
-    endAt: Date
+    endAt: Date,
+    ignoreAppointmentId?: string
   ) => Promise<boolean>
 }

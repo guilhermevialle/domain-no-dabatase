@@ -3,7 +3,6 @@ import { IAppointmentRepository } from '../../interfaces/repositories/appointmen
 import { IAvailableDayRepository } from '../../interfaces/repositories/available-day-repository'
 import { ITimeSlotRepository } from '../../interfaces/repositories/time-slot-repository'
 import { IBarberAvailabilityService } from '../../interfaces/services/barber-availability-service'
-import { Barber } from '../entities/barber'
 import { Time } from '../value-objects/time'
 
 export class BarberAvailabilityService implements IBarberAvailabilityService {
@@ -14,9 +13,10 @@ export class BarberAvailabilityService implements IBarberAvailabilityService {
   ) {}
 
   async isBarberAvailable(
-    barber: Barber,
+    barberId: string,
     startAt: Date,
-    endAt: Date
+    endAt: Date,
+    ignoreAppointmentId?: string
   ): Promise<boolean> {
     const weekday = getDay(startAt)
 
@@ -27,15 +27,16 @@ export class BarberAvailabilityService implements IBarberAvailabilityService {
 
     const isSomeOverlapping =
       await this.appointmentRepo.isOverlappingByDateAndBarberId(
-        barber.id!,
+        barberId,
         startAt,
-        endAt
+        endAt,
+        ignoreAppointmentId
       )
 
     if (isSomeOverlapping) return false
 
     const availableDay = await this.availableDayRepo.findByWeekdayAndBarberId(
-      barber.id!,
+      barberId,
       weekday
     )
 
