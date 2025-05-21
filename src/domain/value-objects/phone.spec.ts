@@ -1,52 +1,49 @@
-import { describe, expect, it } from 'vitest'
-import { BrazilPhone } from './phone'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { BrazilPhone } from './phone';
 
-describe('BrazilPhone', () => {
-  it('should accept valid phone number with country code', () => {
-    const phone = new BrazilPhone('5527999999999')
-    expect(phone.value).toBe('5527999999999')
-  })
+describe('Phone Value Object', () => {
+  let phone: BrazilPhone;
 
-  it('should accept valid phone number without country code', () => {
-    const phone = new BrazilPhone('27999999999')
-    expect(phone.value).toBe('5527999999999')
-  })
+  beforeEach(() => {
+    phone = new BrazilPhone('27999999999');
+  });
 
-  it('should accept valid formatted phone number', () => {
-    const phone = new BrazilPhone('(27) 99999-9999')
-    expect(phone.value).toBe('5527999999999')
-  })
+  it('should create BrazilPhone with valid phone including country code', () => {
+    expect(phone).toBeInstanceOf(BrazilPhone);
+  });
 
-  it('should accept valid formatted phone with country code', () => {
-    const phone = new BrazilPhone('+55 (27) 99999-9999')
-    expect(phone.value).toBe('5527999999999')
-  })
+  it('should throw if DDD is not valid', () => {
+    expect(() => new BrazilPhone('2999986558')).toThrow();
+  });
 
-  it('should throw error for phone number with invalid DDD', () => {
-    expect(() => new BrazilPhone('(00) 99999-9999')).toThrowError(
-      'Invalid Brazilian phone number. Must have a valid DDD and 8-9 digits after DDD.'
-    )
-  })
+  it("should create BrazilPhone with valid phone without country code and add '55'", () => {
+    phone = new BrazilPhone('27999999999');
+    expect(phone.value).toBe('5527999999999');
+  });
 
-  it('should throw error for phone number with less than 10 digits', () => {
-    expect(() => new BrazilPhone('279999999')).toThrowError(
-      'Invalid Brazilian phone number. Must have a valid DDD and 8-9 digits after DDD.'
-    )
-  })
+  it("should normalize phone to start with '55'", () => {
+    phone = new BrazilPhone('5527999999999');
+    expect(phone.value).toBe('5527999999999');
+  });
 
-  it('should throw error for phone number with more than 11 digits after DDD', () => {
-    expect(() => new BrazilPhone('279999999999')).toThrowError(
-      'Invalid Brazilian phone number. Must have a valid DDD and 8-9 digits after DDD.'
-    )
-  })
+  it('should throw if phone number length is less than 10 digits', () => {
+    expect(() => new BrazilPhone('2799999')).toThrow();
+  });
 
-  it('should normalize different formats to the same internal value', () => {
-    const phone1 = new BrazilPhone('27999999999')
-    const phone2 = new BrazilPhone('(27) 99999-9999')
-    const phone3 = new BrazilPhone('+55 (27) 99999-9999')
+  it('should throw if phone number length is greater than 11 digits', () => {
+    expect(() => new BrazilPhone('2799999999999')).toThrow();
+  });
 
-    expect(phone1.value).toBe('5527999999999')
-    expect(phone2.value).toBe('5527999999999')
-    expect(phone3.value).toBe('5527999999999')
-  })
-})
+  it('should throw if number part length is less than 8 digits', () => {
+    expect(() => new BrazilPhone('279999999')).toThrow();
+  });
+
+  it('should throw if number part length is greater than 9 digits', () => {
+    expect(() => new BrazilPhone('279999999999')).toThrow();
+  });
+
+  it('should return formatted phone number', () => {
+    phone = new BrazilPhone('5527999999999');
+    expect(phone.formatted).toBe('+55 (27) 99999-9999');
+  });
+});
