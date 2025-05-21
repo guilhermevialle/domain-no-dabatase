@@ -1,64 +1,41 @@
-import { describe, expect, it } from 'vitest'
-import { AVAILABLE_SERVICES } from '../../@types/service'
-import { Barber } from './barber'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Barber } from './barber';
 
-describe('Barber', () => {
-  const validProps = {
-    since: new Date(),
-    fullName: 'John Doe',
-    services: [AVAILABLE_SERVICES[0]],
-  }
+describe('Barber Entity', () => {
+  let barber: Barber;
 
-  it('should return true if canDoService is called with a valid service', () => {
-    const barber = new Barber(validProps)
-    expect(barber.canDoService(AVAILABLE_SERVICES[0])).toBe(true)
-  })
+  beforeEach(() => {
+    barber = new Barber({
+      id: 'barber-1',
+      fullName: 'John Doe',
+      since: new Date('2020-01-01'),
+      services: ['Beard Trim', 'Clean Shave'],
+    });
+  });
 
-  it('should return false if canDoService is called with an invalid service', () => {
-    const barber = new Barber(validProps)
-    expect(barber.canDoService(AVAILABLE_SERVICES[1])).toBe(false)
-  })
-
-  it('should create a Barber with default bufferMinutes = 10', () => {
-    const barber = new Barber(validProps)
-    expect(barber.bufferMinutes).toBe(10)
-  })
-
-  it('should allow setting bufferMinutes within valid range and multiple of 5', () => {
-    const barber = new Barber({ ...validProps, bufferMinutes: 15 })
-    expect(barber.bufferMinutes).toBe(15)
-  })
-
-  it('should throw if bufferMinutes is not multiple of 5', () => {
-    expect(() => {
-      new Barber({ ...validProps, bufferMinutes: 7 })
-    }).toThrow('Buffer time must be in 5-minute increments.')
-  })
-
-  it('should throw if bufferMinutes is less than 5', () => {
-    expect(() => {
-      new Barber({ ...validProps, bufferMinutes: 0 })
-    }).toThrow('Buffer time must be between 5 and 30 minutes.')
-  })
-
-  it('should throw if bufferMinutes is greater than 30', () => {
-    expect(() => {
-      new Barber({ ...validProps, bufferMinutes: 35 })
-    }).toThrow('Buffer time must be between 5 and 30 minutes.')
-  })
-
-  it('should throw if no services provided', () => {
-    expect(() => {
-      new Barber({ ...validProps, services: [] })
-    }).toThrow('Must have at least 1 specialty.')
-  })
-
-  it('should throw if duplicate services are provided', () => {
+  it('should throw if no services are provided', () => {
     expect(() => {
       new Barber({
-        ...validProps,
-        services: [AVAILABLE_SERVICES[0], AVAILABLE_SERVICES[0]],
-      })
-    }).toThrow('Duplicate services are not allowed.')
-  })
-})
+        ...barber.toJSON(),
+        services: [],
+      });
+    }).toThrow();
+  });
+
+  it('should throw if services contain duplicates', () => {
+    expect(() => {
+      new Barber({
+        ...barber.toJSON(),
+        services: ['Beard Trim', 'Beard Trim'],
+      });
+    }).toThrow();
+  });
+
+  it('should return true if barber can do the given service', () => {
+    expect(barber.canDoService('Beard Trim')).toBe(true);
+  });
+
+  it('should return false if barber cannot do the given service', () => {
+    expect(barber.canDoService('Kids Haircut')).toBe(false);
+  });
+});

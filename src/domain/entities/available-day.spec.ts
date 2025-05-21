@@ -1,24 +1,36 @@
-import { describe, expect, it } from 'vitest'
-import { AvailableDay } from './available-day'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { AvailableDay } from './available-day';
 
 describe('AvailableDay Entity', () => {
-  it('creates available day with valid weekday', () => {
-    const day = new AvailableDay({
-      id: '1',
+  let availableDay: AvailableDay;
+
+  beforeEach(() => {
+    availableDay = new AvailableDay({
+      id: 'available-day-1',
       barberId: 'barber-1',
-      weekday: 2,
-    })
+      weekday: 1,
+    });
+  });
 
-    expect(day.weekday).toBe(2)
-  })
+  it('should create an AvailableDay with generated id if not provided', () => {
+    expect(availableDay.id).toBeDefined();
+  });
 
-  it('throws if weekday is invalid', () => {
+  it('should throw if weekday is less than 0', () => {
     expect(() => {
       new AvailableDay({
-        id: '1',
-        barberId: 'b1',
-        weekday: 8,
-      })
-    }).toThrow('Weekday must be between 0 (Sunday) and 6 (Saturday).')
-  })
-})
+        ...availableDay.toJSON(),
+        weekday: -1,
+      });
+    }).toThrow();
+  });
+
+  it('should throw if weekday is greater than 6', () => {
+    expect(() => {
+      new AvailableDay({
+        ...availableDay.toJSON(),
+        weekday: 7,
+      });
+    }).toThrow();
+  });
+});

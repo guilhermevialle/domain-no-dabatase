@@ -1,39 +1,43 @@
-import { randomId } from '../../utils/random-id'
-import { Email } from '../value-objects/email'
-import { BrazilPhone } from '../value-objects/phone'
+import { randomId } from '../../utils/random-id';
+import { Email } from '../value-objects/email';
+import { BrazilPhone } from '../value-objects/phone';
 
 type OptionalCustomerProps = Partial<{
-  id: string
-}>
+  id: string;
+}>;
 interface RequiredCustomerProps {
-  fullName: string
-  email: Email
-  phone: BrazilPhone
+  fullName: string;
+  email: Email;
+  phone: BrazilPhone;
 }
 
-type CustomerProps = OptionalCustomerProps & RequiredCustomerProps
+type CustomerProps = OptionalCustomerProps & RequiredCustomerProps;
 export class Customer {
-  private props: CustomerProps
+  private props: CustomerProps;
 
   constructor(props: CustomerProps) {
-    this.props = props
+    this.props = props;
 
-    if (!this.props.id) this.props.id = randomId()
+    if (!this.props.id) this.props.id = randomId();
+  }
+
+  public toJSON() {
+    return this.props;
   }
 
   get id() {
-    return this.props.id
+    return this.props.id;
   }
 
   get fullName() {
-    return this.props.fullName
+    return this.props.fullName;
   }
 
   get email() {
-    return this.props.email.value
+    return this.props.email.value;
   }
 
   get phone() {
-    return this.props.phone.value
+    return this.props.phone.value;
   }
 }

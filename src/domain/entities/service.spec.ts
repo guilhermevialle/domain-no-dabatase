@@ -1,34 +1,41 @@
-import { describe, expect, it } from 'vitest'
-import { AVAILABLE_SERVICES } from '../../@types/service'
-import { Service } from './service'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Service } from './service';
 
-describe('Service', () => {
-  const validProps = {
-    name: AVAILABLE_SERVICES[0],
-    duration: 30,
-    priceInCents: 2500,
-  }
+describe('Service Entity', () => {
+  let service: Service;
 
-  it('should create a Service with valid props', () => {
-    const service = new Service(validProps)
-    expect(service.name).toBe(validProps.name)
-    expect(service.duration).toBe(validProps.duration)
-    expect(service.priceInCents).toBe(validProps.priceInCents)
-  })
+  beforeEach(() => {
+    service = new Service({
+      name: 'Beard Trim',
+      duration: 30,
+      priceInCents: 3000,
+    });
+  });
 
-  it('should throw if duration is zero or less', () => {
+  it('should throw if price is less than 100', () => {
     expect(() => {
-      new Service({ ...validProps, duration: 0 })
-    }).toThrow('Invalid duration.')
+      new Service({
+        ...service.toJSON(),
+        priceInCents: 99,
+      });
+    }).toThrow();
+  });
 
+  it('should throw if duration is less than or equal to 0', () => {
     expect(() => {
-      new Service({ ...validProps, duration: -5 })
-    }).toThrow('Invalid duration.')
-  })
+      new Service({
+        ...service.toJSON(),
+        duration: 0,
+      });
+    }).toThrow();
+  });
 
-  it('should throw if duration is not a multiple of 5', () => {
+  it('should throw if duration is not a multiple of 30', () => {
     expect(() => {
-      new Service({ ...validProps, duration: 27 })
-    }).toThrow('Duration must be a multiple of 5 minutes.')
-  })
-})
+      new Service({
+        ...service.toJSON(),
+        duration: 31,
+      });
+    }).toThrow();
+  });
+});

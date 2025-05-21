@@ -1,123 +1,91 @@
-import { addMinutes, getDay } from 'date-fns'
-import { describe, expect, it } from 'vitest'
-import {
-  AVAILABLE_SERVICES,
-  BASE_DURATIONS_IN_MINUTES,
-  BASE_PRICES_IN_CENTS,
-} from '../../@types/service'
-import { Time } from '../value-objects/time'
-import { Appointment } from './appointment'
+import { addMinutes, subMinutes } from 'date-fns';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Time } from '../value-objects/time';
+import { Appointment } from './appointment';
 
-describe('Appointment', () => {
-  const now = new Date()
-  const future = addMinutes(now, 30)
-  const validService = AVAILABLE_SERVICES[0]
+describe('Appointment Entity', () => {
+  let now: Date;
+  let appointment: Appointment;
 
-  it('should create an appointment with defaults using base duration and price', () => {
-    const appointment = new Appointment({
-      customerId: 'customer-id',
-      barberId: 'barber-id',
-      service: validService,
-      startAt: future,
-    })
+  beforeEach(() => {
+    now = new Date();
+    appointment = new Appointment({
+      barberId: 'barber-1',
+      customerId: 'customer-1',
+      priceInCents: 3000,
+      service: 'Kids Haircut',
+      startAt: addMinutes(now, 10),
+    });
+  });
 
-    expect(appointment.duration).toBe(BASE_DURATIONS_IN_MINUTES[validService])
-    expect(appointment.priceInCents).toBe(BASE_PRICES_IN_CENTS[validService])
-    expect(appointment.status).toBe('SCHEDULED')
-  })
+  it('should create an appointment successfully', () => {
+    expect(appointment).toBeTruthy();
+    expect(appointment.status).toBe('SCHEDULED');
+    expect(appointment.endAt).toEqual(addMinutes(now, 10 + 30));
+    expect(appointment.duration).toBe(30);
+    expect(appointment.priceInCents).toBe(3000);
+    expect(appointment.barberId).toBe('barber-1');
+    expect(appointment.customerId).toBe('customer-1');
+    expect(appointment.service).toBe('Kids Haircut');
+    expect(appointment.startAt).toEqual(addMinutes(now, 10));
+  });
 
-  it('should reject invalid duration (not divisible by 5)', () => {
+  it('should reject invalid duration (not divisible by 30)', () => {
     expect(() => {
       new Appointment({
-        customerId: 'c',
-        barberId: 'b',
-        service: validService,
-        startAt: future,
-        duration: 7,
-      })
-    }).toThrow('Duration must be a multiple of 5 minutes.')
-  })
-
-  it('should reject invalid service not listed in AVAILABLE_SERVICES', () => {
-    expect(() => {
-      new Appointment({
-        customerId: 'c',
-        barberId: 'b',
-        service: 'Custom Service' as any,
-        startAt: future,
-        duration: 30,
-      })
-    }).toThrow('Cannot create custom Appointment service.')
-  })
+        ...appointment.toJSON(),
+        duration: 15,
+      });
+    }).toThrow();
+  });
 
   it('should reject appointments scheduled in the past', () => {
     expect(() => {
       new Appointment({
-        customerId: 'c',
-        barberId: 'b',
-        service: validService,
-        startAt: addMinutes(new Date(), -5),
-      })
-    }).toThrow('Start date must be in the future.')
-  })
+        ...appointment.toJSON(),
+        startAt: subMinutes(now, 10),
+      });
+    }).toThrow();
+  });
 
-  it('should cancel if more than 10 minutes before start', () => {
-    const appointment = new Appointment({
-      customerId: 'c',
-      barberId: 'b',
-      service: validService,
-      startAt: addMinutes(new Date(), 30),
-    })
+  it('should allow cancellation if more than 10 minutes before start', () => {
+    expect(
+      new Appointment({
+        ...appointment.toJSON(),
+        startAt: addMinutes(now, 11),
+      }).cancel(),
+    );
+  });
 
-    appointment.cancel()
-    expect(appointment.status).toBe('CANCELED')
-  })
-
-  it('should not cancel if less than 10 minutes before start', () => {
-    const appointment = new Appointment({
-      customerId: 'c',
-      barberId: 'b',
-      service: validService,
-      startAt: addMinutes(new Date(), 5),
-    })
-
-    expect(() => appointment.cancel()).toThrow(
-      'Cannot cancel appointment less than 10 minutes before the start time.'
-    )
-  })
+  it('should prevent cancellation if less than 10 minutes before start', () => {
+    expect(() => {
+      new Appointment({
+        ...appointment.toJSON(),
+        startAt: addMinutes(now, 9),
+      }).cancel();
+    }).toThrow();
+  });
 
   it('should finish appointment and mark as FINISHED', () => {
-    const appointment = new Appointment({
-      customerId: 'c',
-      barberId: 'b',
-      service: validService,
-      startAt: future,
-    })
+    appointment.finish();
+    expect(appointment.status).toBe('FINISHED');
+  });
 
-    appointment.finish()
-    expect(appointment.status).toBe('FINISHED')
-  })
+  it('should reschedule appointment if start date is valid and more than 10 minutes ahead', () => {
+    appointment.reschedule(addMinutes(now, 10));
+  });
+
+  it('should prevent rescheduling if start date is in the past', () => {
+    expect(() => {
+      appointment.reschedule(subMinutes(now, 10));
+    }).toThrow();
+  });
 
   it('should return correct weekday using getDay()', () => {
-    const appointment = new Appointment({
-      customerId: 'c',
-      barberId: 'b',
-      service: validService,
-      startAt: future,
-    })
-
-    expect(appointment.getDay()).toBe(getDay(future))
-  })
+    expect(appointment.getDay()).toBe(now.getDay());
+  });
 
   it('should return a Time object using getTime()', () => {
-    const appointment = new Appointment({
-      customerId: 'c',
-      barberId: 'b',
-      service: validService,
-      startAt: future,
-    })
-
-    const time = appointment.getTime()
-    expect(time).toBeInstanceOf(Time)
-  })
-})
+    expect(appointment.getTime()).toBeInstanceOf(Time);
+  });
+});

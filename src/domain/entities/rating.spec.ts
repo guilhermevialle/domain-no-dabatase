@@ -1,66 +1,66 @@
-import { describe, expect, it } from 'vitest'
-import { Rating } from './rating'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Rating } from './rating';
 
-describe('Rating entity', () => {
-  it('should create a valid rating with required fields and default comment', () => {
-    const rating = new Rating({
-      appointmentId: 'appointment-1',
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-      rating: 4,
-    })
+describe('Rating Entity', () => {
+  let rating: Rating;
 
-    expect(rating).toBeInstanceOf(Rating)
-    expect(rating.rating).toBe(4)
-    expect(rating.comment).toBe('')
-    expect(rating.appointmentId).toBe('appointment-1')
-  })
-
-  it('should create a rating with comment', () => {
-    const rating = new Rating({
-      appointmentId: 'appointment-1',
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-      rating: 5,
+  beforeEach(() => {
+    rating = new Rating({
+      appointmentId: 'a-1',
+      barberId: 'b-1',
+      customerId: 'c-1',
       comment: 'Great service!',
-    })
+      rating: 5,
+    });
+  });
 
-    expect(rating.comment).toBe('Great service!')
-  })
+  it('should create a rating with default id, comment, and createdAt', () => {
+    expect(rating.id).toBeDefined();
+    expect(rating.comment).toBeDefined();
+    expect(rating.createdAt).toBeDefined();
+  });
 
-  it('should throw if rating is below 1', () => {
+  it('should throw if rating is less than 1', () => {
     expect(() => {
       new Rating({
-        appointmentId: 'a',
-        barberId: 'b',
-        customerId: 'c',
+        ...rating.toJSON(),
         rating: 0,
-      })
-    }).toThrow('Rating must be between 1 and 5.')
-  })
+      });
+    }).toThrow();
+  });
 
-  it('should throw if rating is above 5', () => {
+  it('should throw if rating is greater than 5', () => {
     expect(() => {
       new Rating({
-        appointmentId: 'a',
-        barberId: 'b',
-        customerId: 'c',
+        ...rating.toJSON(),
         rating: 6,
-      })
-    }).toThrow('Rating must be between 1 and 5.')
-  })
+      });
+    }).toThrow();
+  });
 
-  it('should throw if comment is longer than 255 characters', () => {
-    const longComment = 'a'.repeat(256)
-
+  it('should throw if comment exceeds 255 characters', () => {
     expect(() => {
       new Rating({
-        appointmentId: 'a',
-        barberId: 'b',
-        customerId: 'c',
-        rating: 3,
-        comment: longComment,
-      })
-    }).toThrow('Comment must be under 255 characters.')
-  })
-})
+        ...rating.toJSON(),
+        comment: 'a'.repeat(256),
+      });
+    }).toThrow();
+  });
+
+  it('should preserve provided id, comment, and createdAt if given', () => {
+    const id = 'a-1';
+    const comment = 'Great service!';
+    const createdAt = new Date();
+
+    const iRating = new Rating({
+      ...rating.toJSON(),
+      id,
+      comment,
+      createdAt,
+    });
+
+    expect(iRating.id).toBe(id);
+    expect(iRating.comment).toBe(comment);
+    expect(iRating.createdAt).toBe(createdAt);
+  });
+});

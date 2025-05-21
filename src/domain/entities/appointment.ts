@@ -1,155 +1,148 @@
-import { addMinutes, differenceInMinutes, getDay, isPast } from 'date-fns'
-import { AppointmentStatus } from '../../@types/appointment'
-import {
-  AVAILABLE_SERVICES,
-  AvailableService,
-  BASE_DURATIONS_IN_MINUTES,
-  BASE_PRICES_IN_CENTS,
-} from '../../@types/service'
-import { randomId } from '../../utils/random-id'
-import { Time } from '../value-objects/time'
+import { addMinutes, differenceInMinutes, getDay, isPast } from 'date-fns';
+import { AppointmentStatus } from '../../@types/appointment';
+import { AvailableService } from '../../@types/service';
+import { randomId } from '../../utils/random-id';
+import { Time } from '../value-objects/time';
 
 type OptionalAppointmentProps = Partial<{
-  id: string
-  duration: number
-  priceInCents: number
-  createdAt: Date
-  status: AppointmentStatus
-  updatedAt: Date
-  endAt: Date
-}>
+  id: string;
+  status: AppointmentStatus;
+  duration: number;
+  endAt: Date;
+  updatedAt: Date;
+  createdAt: Date;
+}>;
 
 interface RequiredAppointmentProps {
-  customerId: string
-  barberId: string
-  service: AvailableService
-  startAt: Date
+  customerId: string;
+  barberId: string;
+  service: AvailableService;
+  startAt: Date;
+  priceInCents: number;
 }
 
 export type AppointmentProps = RequiredAppointmentProps &
-  OptionalAppointmentProps
+  OptionalAppointmentProps;
 
 export class Appointment {
-  private props: AppointmentProps
+  private props: AppointmentProps;
 
   constructor(props: AppointmentProps) {
+    const now = new Date();
+
     this.props = {
       ...props,
       id: props.id ?? randomId(),
       status: props.status ?? 'SCHEDULED',
-      duration: props.duration ?? BASE_DURATIONS_IN_MINUTES[props.service],
-      priceInCents: props.priceInCents ?? BASE_PRICES_IN_CENTS[props.service],
+      duration: props.duration ?? 30,
       endAt: props.endAt ?? addMinutes(props.startAt, props.duration!),
-      createdAt: props.createdAt ?? new Date(),
-      updatedAt: props.updatedAt ?? new Date(),
-    }
+      createdAt: props.createdAt ?? now,
+      updatedAt: props.updatedAt ?? now,
+    };
 
-    this.validate(this.props)
+    this.validate(this.props);
   }
 
   private validate(props: AppointmentProps) {
-    if (props.duration! % 5 !== 0) {
-      throw new Error('Duration must be a multiple of 5 minutes.')
+    if (props.duration! % 30 !== 0) {
+      throw new Error('Duration must be a multiple of 30 minutes.');
     }
 
-    if (!AVAILABLE_SERVICES.includes(props.service))
-      throw new Error('Cannot create custom Appointment service.')
-
     if (isPast(props.startAt))
-      throw new Error('Start date must be in the future.')
+      throw new Error('Start date must be in the future.');
   }
 
   private touch() {
-    this.props.updatedAt = new Date()
+    this.props.updatedAt = new Date();
   }
 
   public finish() {
-    this.props.status = 'FINISHED'
-    this.touch()
+    this.props.status = 'FINISHED';
+    this.touch();
   }
 
   public cancel() {
-    const now = new Date()
-    const minutesUntilStart = differenceInMinutes(this.props.startAt, now)
+    const now = new Date();
+    const minutesUntilStart = differenceInMinutes(this.props.startAt, now);
 
     if (minutesUntilStart < 10)
       throw new Error(
-        'Cannot cancel appointment less than 10 minutes before the start time.'
-      )
+        'Cannot cancel appointment less than 10 minutes before the start time.',
+      );
 
-    this.props.status = 'CANCELED'
-    this.touch()
+    this.props.status = 'CANCELED';
+    this.touch();
   }
 
   public reschedule(startAt: Date) {
-    if (isPast(startAt)) throw new Error('Start date must be in the future.')
+    if (isPast(startAt)) throw new Error('Start date must be in the future.');
 
-    const minutesUntilStart = differenceInMinutes(startAt, new Date())
+    const minutesUntilStart = differenceInMinutes(startAt, new Date());
 
     if (minutesUntilStart < 10)
       throw new Error(
-        'Cannot reschedule appointment less than 10 minutes before the start time.'
-      )
+        'Cannot reschedule appointment less than 10 minutes before the start time.',
+      );
 
-    this.props.startAt = startAt
-    this.props.endAt = addMinutes(startAt, this.props.duration!)
-    this.touch()
+    this.props.startAt = startAt;
+    this.props.endAt = addMinutes(startAt, this.props.duration!);
+    this.touch();
   }
 
   public getTime() {
-    return new Time(this.startAt)
+    return new Time(this.startAt);
   }
 
   public getDay() {
-    return getDay(this.props.startAt)
+    return getDay(this.props.startAt);
   }
 
   public toJSON() {
-    return this.props
+    return this.props;
   }
 
   // getters
   get id() {
-    return this.props.id
+    return this.props.id;
   }
 
   get customerId() {
-    return this.props.customerId
+    return this.props.customerId;
   }
 
   get barberId() {
-    return this.props.barberId
+    return this.props.barberId;
   }
 
   get service() {
-    return this.props.service
+    return this.props.service;
   }
 
   get status() {
-    return this.props.status
+    return this.props.status;
   }
 
   get priceInCents() {
-    return this.props.priceInCents
+    return this.props.priceInCents;
   }
 
   get startAt() {
-    return this.props.startAt
+    return this.props.startAt;
   }
 
   get duration() {
-    return this.props.duration
+    return this.props.duration;
   }
 
   get endAt() {
-    return addMinutes(this.props.startAt, this.props.duration!)
+    return addMinutes(this.props.startAt, this.props.duration!);
   }
 
   get createdAt() {
-    return this.props.createdAt
+    return this.props.createdAt;
   }
 
   get updatedAt() {
-    return this.props.updatedAt
+    return this.props.updatedAt;
   }
 }

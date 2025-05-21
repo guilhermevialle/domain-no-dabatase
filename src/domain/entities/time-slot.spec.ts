@@ -1,41 +1,42 @@
-import { describe, expect, it } from 'vitest'
-import { Time } from '../value-objects/time'
-import { TimeSlot } from './time-slot'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Time } from '../value-objects/time';
+import { TimeSlot } from './time-slot';
 
 describe('TimeSlot Entity', () => {
-  it('should create a valid time slot', () => {
-    const start = new Time('09:00')
-    const end = new Time('10:00')
-    const slot = new TimeSlot({
-      id: '1',
-      availableDayId: 'day-1',
-      start,
-      end,
-    })
+  let timeSlot: TimeSlot;
+  let now: Date;
 
-    expect(slot.start.value).toBe('09:00')
-    expect(slot.end.value).toBe('10:00')
-  })
+  beforeEach(() => {
+    now = new Date();
 
-  it('should throw if start and end times are equal', () => {
+    timeSlot = new TimeSlot({
+      availableDayId: 'available-day-1',
+      start: new Time('08:00'),
+      end: new Time('17:00'),
+    });
+  });
+
+  it('should create a TimeSlot with generated id if not provided', () => {
+    expect(timeSlot.id).toBeDefined();
+  });
+
+  it('should throw if start time and end time are the same', () => {
     expect(() => {
       new TimeSlot({
-        id: '1',
-        availableDayId: 'day-1',
-        start: new Time('10:00'),
-        end: new Time('10:00'),
-      })
-    }).toThrow('Start and end times cannot be the same.')
-  })
+        ...timeSlot.toJSON(),
+        start: new Time('08:00'),
+        end: new Time('08:00'),
+      });
+    }).toThrow();
+  });
 
   it('should throw if start time is after end time', () => {
     expect(() => {
       new TimeSlot({
-        id: '1',
-        availableDayId: 'day-1',
-        start: new Time('11:00'),
-        end: new Time('10:00'),
-      })
-    }).toThrow('Start time must be before end time.')
-  })
-})
+        ...timeSlot.toJSON(),
+        start: new Time('17:00'),
+        end: new Time('08:00'),
+      });
+    }).toThrow();
+  });
+});

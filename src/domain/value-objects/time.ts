@@ -1,59 +1,50 @@
+import { format, isAfter, isBefore, isValid, parse } from 'date-fns';
+
 export class Time {
-  private _value: string
+  private _value: string;
 
   constructor(value: string | Date) {
-    if (value instanceof Date) {
-      this._value = Time.fromDate(value)
-      return
+    this._value = this.validate(value);
+  }
+
+  private validate(value: string | Date) {
+    const timeString = value instanceof Date ? format(value, 'HH:mm') : value;
+
+    if (!Time.isValidFormat(timeString)) {
+      throw new Error('Invalid time format. Expected HH:MM in 24-hour format.');
     }
 
-    if (!Time.isValidFormat(value)) {
-      throw new Error('Invalid time format. Expected HH:MM in 24-hour format.')
+    const date = parse(timeString, 'HH:mm', new Date());
+
+    if (!isValid(date)) {
+      throw new Error('Time must be between 00:00 and 23:59.');
     }
 
-    const [hours, minutes] = value.split(':').map(Number)
-
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-      throw new Error('Time must be between 00:00 and 23:59.')
-    }
-
-    this._value = value
+    return timeString;
   }
 
   public isUnderThan(other: Time): boolean {
-    const [thisHours, thisMinutes] = this._value.split(':').map(Number)
-    const [otherHours, otherMinutes] = other.value.split(':').map(Number)
-    return (
-      thisHours < otherHours ||
-      (thisHours === otherHours && thisMinutes < otherMinutes)
-    )
+    const thisDate = parse(this._value, 'HH:mm', new Date());
+    const otherDate = parse(other.value, 'HH:mm', new Date());
+    return isBefore(thisDate, otherDate);
   }
 
   public isOverThan(other: Time): boolean {
-    const [thisHours, thisMinutes] = this._value.split(':').map(Number)
-    const [otherHours, otherMinutes] = other.value.split(':').map(Number)
-    return (
-      thisHours > otherHours ||
-      (thisHours === otherHours && thisMinutes > otherMinutes)
-    )
+    const thisDate = parse(this._value, 'HH:mm', new Date());
+    const otherDate = parse(other.value, 'HH:mm', new Date());
+    return isAfter(thisDate, otherDate);
   }
 
   static isValidFormat(value: string): boolean {
-    return /^\d{2}:\d{2}$/.test(value)
-  }
-
-  static fromDate(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0')
-    const minutes = date.getMinutes().toString().padStart(2, '0')
-    return `${hours}:${minutes}`
+    return /^\d{2}:\d{2}$/.test(value);
   }
 
   public toMinutes(): number {
-    const [hours, minutes] = this._value.split(':').map(Number)
-    return hours * 60 + minutes
+    const [hours, minutes] = this._value.split(':').map(Number);
+    return hours * 60 + minutes;
   }
 
-  get value() {
-    return this._value
+  get value(): string {
+    return this._value;
   }
 }
