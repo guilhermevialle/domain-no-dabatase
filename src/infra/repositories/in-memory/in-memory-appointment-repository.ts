@@ -1,14 +1,38 @@
-import { areIntervalsOverlapping } from 'date-fns'
-import { Appointment } from '../../../domain/entities/appointment'
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
+import {areIntervalsOverlapping} from 'date-fns'
+import {Appointment} from '../../../domain/entities/appointment'
+import {Time} from '../../../domain/value-objects/time'
+import {IAppointmentRepository} from '../../../interfaces/repositories/appointment-repository'
 
 export class InMemoryAppointmentRepository implements IAppointmentRepository {
   private storage: Appointment[] = []
+
+  async findManyEmptyTimesByBarberId(id: string): Promise<string[]> {
+    const appointments = this.storage.filter(
+      (appointment) =>
+        appointment.barberId === id && appointment.status === 'SCHEDULED'
+    )
+
+    const busyTimes = appointments.map(
+      (appointment) => new Time(appointment.startAt).value
+    )
+
+    return busyTimes
+  }
+
+  async findManyPendingAppointments(): Promise<Appointment[]> {
+    return this.storage.filter(
+      (appointment) =>
+        appointment.status === 'SCHEDULED' && appointment.startAt < new Date()
+    )
+  }
 
   async create(appointment: Appointment): Promise<void> {
     this.storage.push(appointment)
   }
 
+  async createMany(appointments: Appointment[]): Promise<void> {
+    this.storage.push(...appointments)
+  }
   async update(appointment: Appointment): Promise<void> {
     const index = this.storage.findIndex(
       (appointment) => appointment.id === appointment.id
@@ -41,6 +65,22 @@ export class InMemoryAppointmentRepository implements IAppointmentRepository {
     return results
   }
 
+  async findManyByBarberIdInRange(
+    barberId: string,
+    startAt: Date,
+    endAt: Date
+  ): Promise<Appointment[]> {
+    return this.storage.filter((appointment) => {
+      if (appointment.barberId !== barberId) return false
+
+      return areIntervalsOverlapping(
+        {start: appointment.startAt, end: appointment.endAt},
+        {start: startAt, end: endAt},
+        {inclusive: true}
+      )
+    })
+  }
+
   async isOverlappingByDateAndBarberId(
     barberId: string,
     startAt: Date,
@@ -56,14 +96,14 @@ export class InMemoryAppointmentRepository implements IAppointmentRepository {
         areIntervalsOverlapping(
           {
             start: appointment.startAt,
-            end: appointment.endAt,
+            end: appointment.endAt
           },
           {
             start: startAt,
-            end: endAt,
+            end: endAt
           },
           {
-            inclusive: true,
+            inclusive: true
           }
         )
       )

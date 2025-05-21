@@ -20,20 +20,20 @@ export const AVAILABLE_SERVICES: AvailableService[] = [
   'Scalp Treatment',
   'Eyebrow Trim',
   'Kids Haircut',
-  'Hair Washing',
+  'Hair Washing'
 ] as const
 
 export const BASE_DURATIONS_IN_MINUTES: Record<AvailableService, number> = {
-  'Beard Trim': 15,
-  'Clean Shave': 20,
-  'Fade Cut': 40,
+  'Beard Trim': 30,
+  'Clean Shave': 30,
+  'Fade Cut': 60,
   'Classic Haircut': 30,
   'Modern Haircut': 30,
-  'Hair Coloring': 60,
-  'Scalp Treatment': 45,
-  'Eyebrow Trim': 10,
-  'Kids Haircut': 25,
-  'Hair Washing': 15,
+  'Hair Coloring': 90,
+  'Scalp Treatment': 60,
+  'Eyebrow Trim': 30,
+  'Kids Haircut': 30,
+  'Hair Washing': 30
 }
 
 export const BASE_PRICES_IN_CENTS: Record<AvailableService, number> = {
@@ -46,5 +46,5 @@ export const BASE_PRICES_IN_CENTS: Record<AvailableService, number> = {
   'Scalp Treatment': 4500, // $45.00
   'Eyebrow Trim': 1500, // $15.00
   'Kids Haircut': 2500, // $25.00
-  'Hair Washing': 1500, // $15.00
+  'Hair Washing': 1500 // $15.00
 }

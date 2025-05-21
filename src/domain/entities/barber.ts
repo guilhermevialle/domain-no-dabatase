@@ -1,5 +1,5 @@
-import { AvailableService } from '../../@types/service'
-import { randomId } from '../../utils/random-id'
+import {AvailableService} from '../../@types/service'
+import {randomId} from '../../utils/random-id'
 
 type OptionalBarberProps = Partial<{
   id: string
@@ -21,7 +21,7 @@ export class Barber {
     this.props = {
       ...props,
       id: props.id || randomId(),
-      bufferMinutes: props.bufferMinutes ?? 10,
+      bufferMinutes: props.bufferMinutes ?? 10
     }
 
     this.validate(this.props)
