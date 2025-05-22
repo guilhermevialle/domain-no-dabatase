@@ -5,6 +5,14 @@ import { InMemoryCustomerRepository } from '../../infra/repositories/in-memory/i
 import { InMemoryRatingRepository } from '../../infra/repositories/in-memory/in-memory-rating-repository';
 import { InMemoryTimeSlotRepository } from '../../infra/repositories/in-memory/in-memory-time-slot-repository';
 
+export interface IBuildRepositories {
+  customerRepo: InMemoryCustomerRepository;
+  barberRepo: InMemoryBarberRepository;
+  appointmentRepo: InMemoryAppointmentRepository;
+  availableDayRepo: InMemoryAvailableDayRepository;
+  timeSlotRepo: InMemoryTimeSlotRepository;
+  ratingRepo: InMemoryRatingRepository;
+}
 export function buildRepositories() {
   const customerRepo = new InMemoryCustomerRepository();
   const barberRepo = new InMemoryBarberRepository();

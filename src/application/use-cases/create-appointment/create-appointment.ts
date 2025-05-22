@@ -1,6 +1,7 @@
 import {
   AvailableService,
   BASE_DURATIONS_IN_MINUTES,
+  BASE_PRICES_IN_CENTS,
 } from '../../../@types/service';
 import { Appointment } from '../../../domain/entities/appointment';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
@@ -40,6 +41,7 @@ export class CreateAppointment {
       throw new Error(`Barber does not provide the service ${service}.`);
 
     const duration = BASE_DURATIONS_IN_MINUTES[service];
+    const priceInCents = BASE_PRICES_IN_CENTS[service];
 
     const appointment = new Appointment({
       barberId,
@@ -47,15 +49,17 @@ export class CreateAppointment {
       service,
       startAt,
       duration,
+      priceInCents,
     });
 
-    const isAvailable = await this.barberAvailability.isBarberAvailable(
+    const isAvailable = await this.barberAvailability.isAvailable(
       barber.id!,
       appointment.startAt,
       appointment.endAt,
     );
 
-    if (!isAvailable) throw new Error('Barber is not available at this time.');
+    if (!isAvailable)
+      throw new Error('Barber is not available after by appointment time.');
 
     await this.appointmentRepo.create(appointment);
 

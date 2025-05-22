@@ -18,24 +18,5 @@ export class RescheduleAppointment {
   async execute({
     id,
     startAt,
-  }: RescheduleAppointmentRequest): Promise<RescheduleAppointmentResponse> {
-    const appointment = await this.appointmentRepo.findById(id);
-
-    if (!appointment) throw new Error('Appointment not found.');
-
-    appointment.reschedule(startAt);
-
-    const isBarberAvailable = await this.barberAvailability.isBarberAvailable(
-      appointment.barberId!,
-      appointment.startAt,
-      appointment.endAt,
-    );
-
-    if (!isBarberAvailable)
-      throw new Error('Barber is not available at this time.');
-
-    await this.appointmentRepo.update(appointment);
-
-    return appointment;
-  }
+  }: RescheduleAppointmentRequest): Promise<RescheduleAppointmentResponse> {}
 }
