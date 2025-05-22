@@ -1,114 +1,96 @@
-import {areIntervalsOverlapping} from 'date-fns'
-import {Appointment} from '../../../domain/entities/appointment'
-import {Time} from '../../../domain/value-objects/time'
-import {IAppointmentRepository} from '../../../interfaces/repositories/appointment-repository'
+import { areIntervalsOverlapping } from 'date-fns';
+import { Appointment } from '../../../domain/entities/appointment';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 
 export class InMemoryAppointmentRepository implements IAppointmentRepository {
-  private storage: Appointment[] = []
+  private storage: Appointment[] = [];
 
-  async findManyEmptyTimesByBarberId(id: string): Promise<string[]> {
-    const appointments = this.storage.filter(
-      (appointment) =>
-        appointment.barberId === id && appointment.status === 'SCHEDULED'
-    )
-
-    const busyTimes = appointments.map(
-      (appointment) => new Time(appointment.startAt).value
-    )
-
-    return busyTimes
-  }
-
-  async findManyPendingAppointments(): Promise<Appointment[]> {
+  async findManyExpiredAppointments(): Promise<Appointment[]> {
     return this.storage.filter(
       (appointment) =>
-        appointment.status === 'SCHEDULED' && appointment.startAt < new Date()
-    )
+        appointment.status === 'EXPIRED' || appointment.startAt < new Date(),
+    );
   }
 
   async create(appointment: Appointment): Promise<void> {
-    this.storage.push(appointment)
+    this.storage.push(appointment);
   }
 
   async createMany(appointments: Appointment[]): Promise<void> {
-    this.storage.push(...appointments)
+    this.storage.push(...appointments);
   }
   async update(appointment: Appointment): Promise<void> {
     const index = this.storage.findIndex(
-      (appointment) => appointment.id === appointment.id
-    )
-    if (index === -1) throw new Error('Appointment not found')
+      (appointment) => appointment.id === appointment.id,
+    );
+    if (index === -1) throw new Error('Appointment not found');
 
-    this.storage[index] = appointment
+    this.storage[index] = appointment;
   }
 
   async findById(id: string): Promise<Appointment | null> {
     const appointment = this.storage.find(
-      (appointment) => appointment.id === id
-    )
-    return appointment ?? null
+      (appointment) => appointment.id === id,
+    );
+    return appointment ?? null;
   }
 
   async findManyByBarberId(barberId: string): Promise<Appointment[]> {
     const results = this.storage.filter(
-      (appointment) => appointment.barberId === barberId
-    )
+      (appointment) => appointment.barberId === barberId,
+    );
 
-    return results
+    return results;
   }
 
   async findManyByCustomerId(customerId: string): Promise<Appointment[]> {
     const results = this.storage.filter(
-      (appointment) => appointment.customerId === customerId
-    )
+      (appointment) => appointment.customerId === customerId,
+    );
 
-    return results
+    return results;
   }
 
   async findManyByBarberIdInRange(
     barberId: string,
     startAt: Date,
-    endAt: Date
+    endAt: Date,
   ): Promise<Appointment[]> {
     return this.storage.filter((appointment) => {
-      if (appointment.barberId !== barberId) return false
+      if (appointment.barberId !== barberId) return false;
 
       return areIntervalsOverlapping(
-        {start: appointment.startAt, end: appointment.endAt},
-        {start: startAt, end: endAt},
-        {inclusive: true}
-      )
-    })
+        { start: appointment.startAt, end: appointment.endAt },
+        { start: startAt, end: endAt },
+        { inclusive: true },
+      );
+    });
   }
 
   async isOverlappingByDateAndBarberId(
     barberId: string,
     startAt: Date,
     endAt: Date,
-    ignoreAppointmentId?: string
   ): Promise<boolean> {
     const overlappingAppointment = this.storage.find((appointment) => {
-      if (ignoreAppointmentId && appointment.id === ignoreAppointmentId)
-        return false
-
       return (
         appointment.barberId === barberId &&
         areIntervalsOverlapping(
           {
             start: appointment.startAt,
-            end: appointment.endAt
+            end: appointment.endAt,
           },
           {
             start: startAt,
-            end: endAt
+            end: endAt,
           },
           {
-            inclusive: true
-          }
+            inclusive: false,
+          },
         )
-      )
-    })
+      );
+    });
 
-    return !!overlappingAppointment
+    return !!overlappingAppointment;
   }
 }

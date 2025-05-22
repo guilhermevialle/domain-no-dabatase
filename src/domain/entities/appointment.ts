@@ -61,6 +61,11 @@ export class Appointment {
     this.touch();
   }
 
+  public discard() {
+    this.props.status = 'EXPIRED';
+    this.touch();
+  }
+
   public cancel() {
     const now = new Date();
     const minutesUntilStart = differenceInMinutes(this.props.startAt, now);

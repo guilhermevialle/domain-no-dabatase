@@ -1,25 +1,25 @@
 import { addMinutes } from 'date-fns';
-import { Appointment } from '../../domain/entities/appointment';
+import {
+  Appointment,
+  AppointmentProps,
+} from '../../domain/entities/appointment';
+import { AvailableDay } from '../../domain/entities/available-day';
 import { Barber } from '../../domain/entities/barber';
 import { Customer } from '../../domain/entities/customer';
 import { Email } from '../../domain/value-objects/email';
 import { BrazilPhone } from '../../domain/value-objects/phone';
 
-interface IBuildAppointment {
+type IBuildAppointment = Partial<AppointmentProps> & {
   barberId: string;
   customerId: string;
-}
+};
 
-export const buildAppointment = ({
-  barberId,
-  customerId,
-}: IBuildAppointment): Appointment =>
+export const buildAppointment = ({ ...rest }: IBuildAppointment): Appointment =>
   new Appointment({
-    barberId,
-    customerId,
     service: 'Beard Trim',
     priceInCents: 35000,
     startAt: addMinutes(new Date(), 10),
+    ...rest,
   });
 
 export const buildBarber = (id: string): Barber =>
@@ -37,3 +37,15 @@ export const buildCustomer = (id: string): Customer =>
     email: new Email('guivialle@gmail.com'),
     phone: new BrazilPhone('27999999999'),
   });
+
+let weekday = 0;
+export const buildAvailableDay = (barberId: string) => {
+  weekday++;
+
+  if (weekday > 6) weekday = 0;
+
+  return new AvailableDay({
+    barberId,
+    weekday,
+  });
+};
