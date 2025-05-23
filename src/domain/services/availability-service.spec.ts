@@ -52,8 +52,7 @@ describe('Availability Service', () => {
     const { availableDays, timeSlots } = await buildAvailability(barber.id!, {
       startDay: 0,
       endDay: 6,
-      startTime: '00:00',
-      endTime: '23:59',
+      slots: [{ startTime: '00:00', endTime: '23:59' }],
     });
 
     await availableDayRepo.createMany(availableDays);
@@ -71,8 +70,7 @@ describe('Availability Service', () => {
     const { availableDays, timeSlots } = buildAvailability('barber-2', {
       startDay: 0,
       endDay: 6,
-      startTime: '08:00',
-      endTime: '12:00',
+      slots: [{ startTime: '08:00', endTime: '12:00' }],
     });
 
     await availableDayRepo.createMany(availableDays);
@@ -101,8 +99,7 @@ describe('Availability Service', () => {
     const { availableDays, timeSlots } = buildAvailability('barber-2', {
       startDay: 0,
       endDay: 6,
-      startTime: '00:00',
-      endTime: '23:59',
+      slots: [{ startTime: '00:00', endTime: '23:59' }],
     });
 
     await availableDayRepo.createMany(availableDays);

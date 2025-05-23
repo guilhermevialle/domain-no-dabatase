@@ -2,11 +2,15 @@ import { AvailableDay } from '../../domain/entities/available-day';
 import { TimeSlot } from '../../domain/entities/time-slot';
 import { Time } from '../../domain/value-objects/time';
 
+interface Slot {
+  startTime: string;
+  endTime: string;
+}
+
 type AvailabilityProps = Partial<{
   startDay: number;
   endDay: number;
-  startTime: string;
-  endTime: string;
+  slots: Slot[];
 }>;
 
 export function buildAvailability(
@@ -14,8 +18,7 @@ export function buildAvailability(
   {
     startDay = 0,
     endDay = 6,
-    startTime = '00:00',
-    endTime = '23:59',
+    slots = [{ startTime: '00:00', endTime: '23:59' }],
   }: AvailabilityProps = {},
 ): {
   availableDays: AvailableDay[];
@@ -38,14 +41,16 @@ export function buildAvailability(
 
     availableDays.push(availableDay);
 
-    const timeSlot = new TimeSlot({
-      id: `time-slot-${barberId}-${weekday}`,
-      availableDayId: availableDay.id!,
-      start: new Time(startTime),
-      end: new Time(endTime),
-    });
+    slots.forEach((slot, index) => {
+      const timeSlot = new TimeSlot({
+        id: `time-slot-${barberId}-${weekday}-${index}`,
+        availableDayId: availableDay.id!,
+        start: new Time(slot.startTime),
+        end: new Time(slot.endTime),
+      });
 
-    timeSlots.push(timeSlot);
+      timeSlots.push(timeSlot);
+    });
   });
 
   return { availableDays, timeSlots };

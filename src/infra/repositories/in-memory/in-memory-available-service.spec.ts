@@ -3,7 +3,7 @@ import { Service } from '../../../domain/entities/service';
 import { IAvailableServiceRepository } from '../../../interfaces/repositories/service-repository';
 import { InMemoryAvailableServiceRepository } from './in-memory-available-service';
 
-describe('InMemoryAvailableServiceRepository', () => {
+describe('InMemory AvailableService Repository', () => {
   let availableServiceRepo: IAvailableServiceRepository;
   let service: Service;
 

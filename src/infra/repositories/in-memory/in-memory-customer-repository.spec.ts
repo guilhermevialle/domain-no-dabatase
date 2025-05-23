@@ -5,7 +5,7 @@ import { BrazilPhone } from '../../../domain/value-objects/phone';
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
 import { InMemoryCustomerRepository } from './in-memory-customer-repository';
 
-describe('InMemoryCustomerRepository', () => {
+describe('InMemory Customer Repository', () => {
   let customerRepo: ICustomerRepository;
   let customer: Customer;
 

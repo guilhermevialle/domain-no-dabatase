@@ -3,7 +3,7 @@ import { Barber } from '../../../domain/entities/barber';
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
 import { InMemoryBarberRepository } from './in-memory-barber-repository';
 
-describe('InMemoryBarberRepository', () => {
+describe('InMemory Barber Repository', () => {
   let baberRepo: IBarberRepository;
   let barber: Barber;
 

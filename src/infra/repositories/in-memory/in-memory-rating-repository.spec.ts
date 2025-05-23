@@ -3,7 +3,7 @@ import { Rating } from '../../../domain/entities/rating';
 import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
 import { InMemoryRatingRepository } from './in-memory-rating-repository';
 
-describe('InMemoryRatingRepository', () => {
+describe('InMemory Rating Repository', () => {
   let ratingRepo: IRatingRepository;
   let rating: Rating;
 

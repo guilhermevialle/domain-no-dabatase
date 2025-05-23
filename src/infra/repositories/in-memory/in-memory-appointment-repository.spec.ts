@@ -5,7 +5,7 @@ import { IAppointmentRepository } from '../../../interfaces/repositories/appoint
 import { buildAppointment } from '../../../test/builders/build-entities';
 import { InMemoryAppointmentRepository } from './in-memory-appointment-repository';
 
-describe('InMemoryAppointmentRepository', () => {
+describe('InMemory Appointment Repository', () => {
   let appointmentRepo: IAppointmentRepository;
   let appointment: Appointment;
   let now: Date;

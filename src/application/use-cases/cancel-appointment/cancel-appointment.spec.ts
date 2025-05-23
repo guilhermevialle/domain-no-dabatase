@@ -7,7 +7,7 @@ import {
 import { buildAppointment } from '../../../test/builders/build-entities';
 import { CancelAppointment } from './cancel-appointment';
 
-describe('CancelAppointment', () => {
+describe('CancelAppointment Use Case', () => {
   let useCase: CancelAppointment;
   let dependecies: IBuildDependecies;
   let appointment: Appointment;

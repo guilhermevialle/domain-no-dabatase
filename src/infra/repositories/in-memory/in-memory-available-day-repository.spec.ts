@@ -3,7 +3,7 @@ import { AvailableDay } from '../../../domain/entities/available-day';
 import { IAvailableDayRepository } from '../../../interfaces/repositories/available-day-repository';
 import { InMemoryAvailableDayRepository } from './in-memory-available-day-repository';
 
-describe('InMemoryAvailableDayRepository', () => {
+describe('InMemory AvailableDay Repository', () => {
   let availableDayRepo: IAvailableDayRepository;
   let now: Date;
   let availableDay: AvailableDay;
