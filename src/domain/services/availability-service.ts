@@ -1,4 +1,10 @@
-import { addMinutes, isBefore, isWithinInterval } from 'date-fns';
+import {
+  addDays,
+  addMinutes,
+  format,
+  isBefore,
+  isWithinInterval,
+} from 'date-fns';
 import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository';
 import { IAvailableDayRepository } from '../../interfaces/repositories/available-day-repository';
 import { ITimeSlotRepository } from '../../interfaces/repositories/time-slot-repository';
@@ -10,6 +16,37 @@ export class AvailabilityService implements IAvailabilityService {
     private readonly timeSlotRepo: ITimeSlotRepository,
     private readonly appointmentRepo: IAppointmentRepository,
   ) {}
+
+  async findBusyTimesByBarberInRange(
+    barberId: string,
+    startAt: Date,
+    endAt: Date,
+  ): Promise<Record<string, string[]>> {
+    const result: Record<string, string[]> = {};
+    let currentDate = startAt;
+
+    while (currentDate <= endAt) {
+      const nextDay = addDays(currentDate, 1);
+
+      const appointments = await this.appointmentRepo.findManyByBarberIdInRange(
+        barberId,
+        currentDate,
+        nextDay,
+      );
+
+      const busyTimes = appointments.map((appointment) =>
+        format(appointment.startAt, 'HH:mm'),
+      );
+
+      if (busyTimes.length > 0) {
+        result[format(currentDate, 'yyyy-MM-dd')] = busyTimes;
+      }
+
+      currentDate = nextDay;
+    }
+
+    return result;
+  }
 
   async isBarberAvailable(
     barberId: string,
@@ -33,6 +70,15 @@ export class AvailabilityService implements IAvailabilityService {
       availableDay.id!,
     );
 
+    const isWithinAvailableSlot = slots.some((slot) =>
+      isWithinInterval(startAt, {
+        start: slot.start.toDate(startAt),
+        end: slot.end.toDate(startAt),
+      }),
+    );
+
+    if (!isWithinAvailableSlot) return false;
+
     const isOverlapping =
       await this.appointmentRepo.findOverlappingByDateAndBarberId(
         barberId,
@@ -41,13 +87,6 @@ export class AvailabilityService implements IAvailabilityService {
         ignoreAppointmentId,
       );
 
-    if (isOverlapping) return false;
-
-    return slots.some((slot) =>
-      isWithinInterval(startAt, {
-        start: slot.start.toDate(startAt),
-        end: slot.end.toDate(startAt),
-      }),
-    );
+    return !isOverlapping;
   }
 }
