@@ -1,18 +1,18 @@
-import { TimeSlot } from '../../../domain/entities/time-slot'
-import { ITimeSlotRepository } from '../../../interfaces/repositories/time-slot-repository'
+import { TimeSlot } from '../../../domain/entities/time-slot';
+import { ITimeSlotRepository } from '../../../interfaces/repositories/time-slot-repository';
 
 export class InMemoryTimeSlotRepository implements ITimeSlotRepository {
-  private storage: TimeSlot[] = []
+  private storage: TimeSlot[] = [];
 
   async create(timeSlot: TimeSlot): Promise<void> {
-    this.storage.push(timeSlot)
+    this.storage.push(timeSlot);
   }
 
   async findManyByAvailableDayId(id: string): Promise<TimeSlot[]> {
     const slots = this.storage.filter(
-      (timeSlot) => timeSlot.availableDayId === id
-    )
+      (timeSlot) => timeSlot.availableDayId === id,
+    );
 
-    return slots
+    return slots;
   }
 }

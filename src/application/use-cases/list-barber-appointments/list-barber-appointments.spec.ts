@@ -1,74 +1,50 @@
-import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Appointment } from '../../../domain/entities/appointment';
 import { Barber } from '../../../domain/entities/barber';
-import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository';
-import { InMemoryBarberRepository } from '../../../infra/repositories/in-memory/in-memory-barber-repository';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
+import {
+  buildAppointment,
+  buildBarber,
+} from '../../../test/builders/build-entities';
+import {
+  buildRepositories,
+  IBuildRepositories,
+} from '../../../test/builders/build-repositories';
 import { ListBarberAppointments } from './list-barber-appointments';
 
-describe('ListBarberAppointmentsUseCase', () => {
-  let appointmentRepo: IAppointmentRepository;
-  let barberRepo: IBarberRepository;
+describe('ListBarberAppointments Use Case', () => {
+  let repos: IBuildRepositories;
+  let barber: Barber;
   let useCase: ListBarberAppointments;
 
   beforeEach(() => {
-    appointmentRepo = new InMemoryAppointmentRepository();
-    barberRepo = new InMemoryBarberRepository();
-    useCase = new ListBarberAppointments(appointmentRepo, barberRepo);
+    repos = buildRepositories();
+    barber = buildBarber('barber-1');
+    useCase = new ListBarberAppointments(
+      repos.appointmentRepo,
+      repos.barberRepo,
+    );
   });
 
-  it('should list barber appointments successfully', async () => {
-    await barberRepo.create(
-      new Barber({
-        id: 'barber-2',
-        fullName: 'John Doe',
-        services: ['Clean Shave'],
-        since: new Date(),
-      }),
-    );
+  it('should throw an error if the barber is not found', async () => {
+    await expect(() =>
+      useCase.execute({ id: 'invalid-id' }),
+    ).rejects.toThrowError();
+  });
 
-    await appointmentRepo.create(
-      new Appointment({
-        barberId: 'barber-2',
+  it('should return the list of appointments for the given barber id', async () => {
+    await repos.barberRepo.create(barber);
+    await repos.appointmentRepo.createMany([
+      buildAppointment({
+        barberId: barber.id!,
         customerId: 'customer-1',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
       }),
-    );
-
-    await appointmentRepo.create(
-      new Appointment({
-        barberId: 'barber-2',
-        customerId: 'customer-2',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
+      buildAppointment({
+        barberId: barber.id!,
+        customerId: 'customer-1',
       }),
-    );
+    ]);
 
-    await appointmentRepo.create(
-      new Appointment({
-        barberId: 'barber-2',
-        customerId: 'customer-3',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
-      }),
-    );
+    const appointments = await useCase.execute({ id: barber.id! });
 
-    const appointments = await useCase.execute({ id: 'barber-2' });
-
-    expect(Array.isArray(appointments)).toBe(true);
-    expect(appointments).toHaveLength(3);
-    appointments.forEach((appointment) => {
-      expect(appointment).toBeInstanceOf(Appointment);
-      expect(appointment.barberId).toBe('barber-2');
-    });
-  });
-
-  it('should throw if barber does not exist', async () => {
-    await expect(useCase.execute({ id: 'barber-2' })).rejects.toThrow(
-      'Barber not found.',
-    );
+    expect(appointments).toHaveLength(2);
   });
 });

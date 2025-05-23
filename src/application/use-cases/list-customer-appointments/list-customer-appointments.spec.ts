@@ -1,76 +1,50 @@
-import { addMinutes } from 'date-fns'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { Appointment } from '../../../domain/entities/appointment'
-import { Customer } from '../../../domain/entities/customer'
-import { Email } from '../../../domain/value-objects/email'
-import { BrazilPhone } from '../../../domain/value-objects/phone'
-import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
-import { InMemoryCustomerRepository } from '../../../infra/repositories/in-memory/in-memory-customer-repository'
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
-import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository'
-import { ListCustomerAppointments } from './list-customer-appointments'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Customer } from '../../../domain/entities/customer';
+import {
+  buildAppointment,
+  buildCustomer,
+} from '../../../test/builders/build-entities';
+import {
+  buildRepositories,
+  IBuildRepositories,
+} from '../../../test/builders/build-repositories';
+import { ListCustomerAppointments } from './list-customer-appointments';
 
-describe('ListCustomerAppointmentsUseCase', () => {
-  let appointmentRepo: IAppointmentRepository
-  let customerRepo: ICustomerRepository
-  let useCase: ListCustomerAppointments
+describe('ListCustomerAppointments Use Case', () => {
+  let repos: IBuildRepositories;
+  let customer: Customer;
+  let useCase: ListCustomerAppointments;
 
   beforeEach(() => {
-    appointmentRepo = new InMemoryAppointmentRepository()
-    customerRepo = new InMemoryCustomerRepository()
-    useCase = new ListCustomerAppointments(appointmentRepo, customerRepo)
-  })
+    repos = buildRepositories();
+    customer = buildCustomer('customer-1');
+    useCase = new ListCustomerAppointments(
+      repos.appointmentRepo,
+      repos.customerRepo,
+    );
+  });
 
-  it('should list customer appointments successfully', async () => {
-    await customerRepo.create(
-      new Customer({
-        id: 'customer-1',
-        email: new Email('guivialle@gmail.com'),
-        phone: new BrazilPhone('27999999999'),
-        fullName: 'gui vialle',
-      })
-    )
+  it('should throw an error if the customer is not found', async () => {
+    await expect(() =>
+      useCase.execute({ id: 'invalid-id' }),
+    ).rejects.toThrowError();
+  });
 
-    await appointmentRepo.create(
-      new Appointment({
+  it('should return the list of appointments for the given customer id', async () => {
+    await repos.customerRepo.create(customer);
+    await repos.appointmentRepo.createMany([
+      buildAppointment({
         barberId: 'barber-1',
-        customerId: 'customer-1',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
-      })
-    )
+        customerId: customer.id!,
+      }),
+      buildAppointment({
+        barberId: 'barber-1',
+        customerId: customer.id!,
+      }),
+    ]);
 
-    await appointmentRepo.create(
-      new Appointment({
-        barberId: 'barber-2',
-        customerId: 'customer-1',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
-      })
-    )
+    const appointments = await useCase.execute({ id: customer.id! });
 
-    await appointmentRepo.create(
-      new Appointment({
-        barberId: 'barber-3',
-        customerId: 'customer-1',
-        service: 'Clean Shave',
-        startAt: addMinutes(new Date(), 10),
-      })
-    )
-
-    const appointments = await useCase.execute({ id: 'customer-1' })
-
-    expect(Array.isArray(appointments)).toBe(true)
-    expect(appointments).toHaveLength(3)
-    appointments.forEach((appointment) => {
-      expect(appointment).toBeInstanceOf(Appointment)
-      expect(appointment.customerId).toBe('customer-1')
-    })
-  })
-
-  it('should throw if customer does not exist', async () => {
-    await expect(useCase.execute({ id: 'customer-1' })).rejects.toThrow(
-      'Customer not found.'
-    )
-  })
-})
+    expect(appointments).toHaveLength(2);
+  });
+});

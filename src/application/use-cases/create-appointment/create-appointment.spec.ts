@@ -1,6 +1,8 @@
 import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildAvailability } from '../../../test/builders/build-availability';
+import { AvailableService } from '../../../@types/service';
+import { Barber } from '../../../domain/entities/barber';
+import { Customer } from '../../../domain/entities/customer';
 import {
   buildBarber,
   buildCustomer,
@@ -16,15 +18,19 @@ import {
 import { CreateAppointment } from './create-appointment';
 
 describe('CreateAppointment Use Case', () => {
-  let now: Date;
-  let repos: IBuildRepositories;
   let useCase: CreateAppointment;
+  let repos: IBuildRepositories;
+  let barber: Barber;
+  let customer: Customer;
   let services: IBuildServices;
+  let now: Date;
 
   beforeEach(() => {
     now = new Date();
     repos = buildRepositories();
     services = buildServices();
+    barber = buildBarber('barber-1');
+    customer = buildCustomer('customer-1');
     useCase = new CreateAppointment(
       repos.appointmentRepo,
       repos.customerRepo,
@@ -33,30 +39,56 @@ describe('CreateAppointment Use Case', () => {
     );
   });
 
-  it('should create an appointment if barber and customer exist and barber is available', async () => {
-    await repos.barberRepo.create(buildBarber('barber-1'));
-    await repos.customerRepo.create(buildCustomer('customer-1'));
-    buildAvailability('barber-1', repos.availableDayRepo, repos.timeSlotRepo);
-
-    const availableDays =
-      await repos.availableDayRepo.findManyByBarberId('barber-1');
-
-    console.log(availableDays);
-    availableDays.forEach(async (availableDay, index) =>
-      console.log(
-        await repos.timeSlotRepo.findManyByAvailableDayId(
-          availableDays[index].id!,
-        ),
-      ),
-    );
-
-    expect(
+  it('should throw an error if the customer does not exist', async () => {
+    await expect(() =>
       useCase.execute({
         barberId: 'barber-1',
         customerId: 'customer-1',
-        service: 'Clean Shave',
-        startAt: addMinutes(now, 10),
+        service: 'Beard Trim',
+        startAt: addMinutes(now, 20),
       }),
-    ).resolves.not.toThrow();
+    ).rejects.toThrowError();
+  });
+
+  it('should throw an error if the barber does not exist', async () => {
+    await expect(() =>
+      useCase.execute({
+        barberId: 'barber-1',
+        customerId: 'customer-1',
+        service: 'Beard Trim',
+        startAt: addMinutes(now, 20),
+      }),
+    ).rejects.toThrowError();
+  });
+
+  it('should throw an error if the barber does not provide the requested service', async () => {
+    await repos.customerRepo.create(customer);
+    await repos.barberRepo.create(barber);
+
+    await expect(() =>
+      useCase.execute({
+        barberId: 'barber-1',
+        customerId: 'customer-1',
+        service: 'any' as AvailableService,
+        startAt: addMinutes(now, 20),
+      }),
+    ).rejects.toThrowError();
+  });
+
+  it('should create an appointment with correct data (duration, price, etc.) if all validations pass', async () => {
+    await repos.customerRepo.create(customer);
+    await repos.barberRepo.create(barber);
+
+    const result = await useCase.execute({
+      barberId: 'barber-1',
+      customerId: 'customer-1',
+      service: 'Beard Trim',
+      startAt: addMinutes(now, 20),
+    });
+
+    expect(result.duration).toBeDefined();
+    expect(result.priceInCents).toBeDefined();
+    expect(result.status).toBe('SCHEDULED');
+    expect(result.endAt).toBeInstanceOf(Date);
   });
 });

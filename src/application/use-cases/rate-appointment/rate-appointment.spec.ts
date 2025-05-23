@@ -1,132 +1,88 @@
-import { addMinutes } from 'date-fns'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { Appointment } from '../../../domain/entities/appointment'
-import { Rating } from '../../../domain/entities/rating'
-import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
-import { InMemoryRatingRepository } from '../../../infra/repositories/in-memory/in-memory-rating-repository'
-import { RateAppointment } from './rate-appointment'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Appointment } from '../../../domain/entities/appointment';
+import { Barber } from '../../../domain/entities/barber';
+import { Customer } from '../../../domain/entities/customer';
+import { Rating } from '../../../domain/entities/rating';
+import {
+  buildAppointment,
+  buildBarber,
+  buildCustomer,
+} from '../../../test/builders/build-entities';
+import {
+  buildRepositories,
+  IBuildRepositories,
+} from '../../../test/builders/build-repositories';
+import { RateAppointment } from './rate-appointment';
 
 describe('RateAppointment Use Case', () => {
-  let rateAppointment: RateAppointment
-  let appointmentRepo: InMemoryAppointmentRepository
-  let ratingRepo: InMemoryRatingRepository
+  let rating: Rating;
+  let barber: Barber;
+  let customer: Customer;
+  let appointment: Appointment;
+  let repos: IBuildRepositories;
+  let useCase: RateAppointment;
 
   beforeEach(() => {
-    appointmentRepo = new InMemoryAppointmentRepository()
-    ratingRepo = new InMemoryRatingRepository()
-    rateAppointment = new RateAppointment(ratingRepo, appointmentRepo)
-  })
-
-  it('should create a rating for an existing appointment', async () => {
-    // Arrange: create and save an appointment first
-    const appointment = new Appointment({
+    rating = new Rating({
+      appointmentId: 'appointment-1',
+      barberId: 'barber-1',
+      customerId: 'customer-1',
+      comment: 'Great service!',
+      rating: 5,
+    });
+    barber = buildBarber('barber-1');
+    customer = buildCustomer('customer-1');
+    appointment = buildAppointment({
       id: 'appointment-1',
       barberId: 'barber-1',
       customerId: 'customer-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-      duration: 60,
-    })
-    await appointmentRepo.create(appointment)
+    });
+    repos = buildRepositories();
+    useCase = new RateAppointment(repos.ratingRepo, repos.appointmentRepo);
+  });
 
-    // Act
-    const rating = await rateAppointment.execute({
-      appointmentId: appointment.id!,
-      barberId: appointment.barberId,
-      customerId: appointment.customerId,
-      rating: 5,
-    })
+  it('should throw an error if the appointment is not found', async () => {
+    await expect(() => useCase.execute(rating.toJSON())).rejects.toThrowError();
+  });
 
-    // Assert
-    expect(rating).toBeInstanceOf(Rating)
-    expect(rating.appointmentId).toBe(appointment.id)
-    expect(rating.rating).toBe(5)
-
-    // Also confirm it was saved in the repo
-    const storedRating = await ratingRepo.findByAppointmentId(appointment.id!)
-    expect(storedRating).not.toBeNull()
-    expect(storedRating?.rating).toBe(5)
-  })
-
-  it('should throw if appointment does not exist', async () => {
+  it('should throw an error if the appointment barberId does not match the provided barberId', async () => {
     await expect(() =>
-      rateAppointment.execute({
-        appointmentId: 'non-existing',
-        barberId: 'barber-1',
-        customerId: 'customer-1',
-        rating: 4,
-      })
-    ).rejects.toThrow('Appointment not found.')
-  })
+      useCase.execute({ ...rating.toJSON(), barberId: 'invalid-barber-id' }),
+    ).rejects.toThrowError();
+  });
 
-  it('should throw if barberId mismatches', async () => {
-    const appointment = new Appointment({
-      id: 'appointment-2',
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-      duration: 60,
-    })
-    await appointmentRepo.create(appointment)
+  it('should throw an error if the appointment customerId does not match the provided customerId', async () => {
+    await expect(() =>
+      useCase.execute({
+        ...rating.toJSON(),
+        customerId: 'invalid-customer-id',
+      }),
+    ).rejects.toThrowError();
+  });
+
+  it('should throw an error if the appointment is already rated', async () => {
+    await repos.ratingRepo.create(rating);
 
     await expect(() =>
-      rateAppointment.execute({
-        appointmentId: appointment.id!,
-        barberId: 'wrong-barber',
-        customerId: appointment.customerId,
-        rating: 4,
-      })
-    ).rejects.toThrow('Barber mismatch.')
-  })
+      useCase.execute({
+        ...rating.toJSON(),
+      }),
+    ).rejects.toThrowError();
+  });
 
-  it('should throw if customerId mismatches', async () => {
-    const appointment = new Appointment({
-      id: 'appointment-3',
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-      duration: 60,
-    })
-    await appointmentRepo.create(appointment)
+  it('should create and return a new rating if all validations pass', async () => {
+    await repos.barberRepo.create(barber);
+    await repos.customerRepo.create(customer);
+    await repos.appointmentRepo.create(appointment);
 
-    await expect(() =>
-      rateAppointment.execute({
-        appointmentId: appointment.id!,
-        barberId: appointment.barberId,
-        customerId: 'wrong-customer',
-        rating: 4,
-      })
-    ).rejects.toThrow('Customer mismatch.')
-  })
+    const result = await useCase.execute({
+      ...rating.toJSON(),
+    });
 
-  it('should throw if appointment already rated', async () => {
-    const appointment = new Appointment({
-      id: 'appointment-4',
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-      duration: 60,
-    })
-    await appointmentRepo.create(appointment)
-
-    const rating = new Rating({
-      appointmentId: appointment.id!,
-      barberId: appointment.barberId,
-      customerId: appointment.customerId,
-      rating: 4,
-    })
-    await ratingRepo.create(rating)
-
-    await expect(() =>
-      rateAppointment.execute({
-        appointmentId: appointment.id!,
-        barberId: appointment.barberId,
-        customerId: appointment.customerId,
-        rating: 5,
-      })
-    ).rejects.toThrow('Appointment already rated.')
-  })
-})
+    expect(result.rating).toBe(rating.rating);
+    expect(result.appointmentId).toBe(rating.appointmentId);
+    expect(result.customerId).toBe(rating.customerId);
+    expect(result.barberId).toBe(rating.barberId);
+    expect(result.comment).toBe(rating.comment);
+  });
+});

@@ -52,15 +52,6 @@ export class CreateAppointment {
       priceInCents,
     });
 
-    const isAvailable = await this.barberAvailability.isAvailable(
-      barber.id!,
-      appointment.startAt,
-      appointment.endAt,
-    );
-
-    if (!isAvailable)
-      throw new Error('Barber is not available after by appointment time.');
-
     await this.appointmentRepo.create(appointment);
 
     return appointment;

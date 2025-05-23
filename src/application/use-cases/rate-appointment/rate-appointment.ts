@@ -1,43 +1,47 @@
-import { Rating, RequiredRatingProps } from '../../../domain/entities/rating'
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
-import { IRatingRepository } from '../../../interfaces/repositories/rating-repository'
+import { Rating, RequiredRatingProps } from '../../../domain/entities/rating';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
+import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
 
-type RateAppointmentRequest = RequiredRatingProps & {}
+type RateAppointmentRequest = RequiredRatingProps & {
+  comment?: string;
+};
 
-type RateAppointmentResponse = Rating
+type RateAppointmentResponse = Rating;
 
 export class RateAppointment {
   constructor(
     private ratingRepo: IRatingRepository,
-    private appointmentRepo: IAppointmentRepository
+    private appointmentRepo: IAppointmentRepository,
   ) {}
 
   async execute({
     appointmentId,
     barberId,
+    comment,
     customerId,
-    rating: ratingValue,
+    rating,
   }: RateAppointmentRequest): Promise<RateAppointmentResponse> {
-    const appointment = await this.appointmentRepo.findById(appointmentId)
-    if (!appointment) throw new Error('Appointment not found.')
+    const appointment = await this.appointmentRepo.findById(appointmentId);
+    if (!appointment) throw new Error('Appointment not found.');
 
-    if (appointment.barberId !== barberId) throw new Error('Barber mismatch.')
+    if (appointment.barberId !== barberId) throw new Error('Barber mismatch.');
     if (appointment.customerId !== customerId)
-      throw new Error('Customer mismatch.')
+      throw new Error('Customer mismatch.');
 
     const existingRating =
-      await this.ratingRepo.findByAppointmentId(appointmentId)
-    if (existingRating) throw new Error('Appointment already rated.')
+      await this.ratingRepo.findByAppointmentId(appointmentId);
+    if (existingRating) throw new Error('Appointment already rated.');
 
-    const rating = new Rating({
+    const _rating = new Rating({
       appointmentId,
       barberId,
       customerId,
-      rating: ratingValue,
-    })
+      comment,
+      rating: rating,
+    });
 
-    await this.ratingRepo.create(rating)
+    await this.ratingRepo.create(_rating);
 
-    return rating
+    return _rating;
   }
 }

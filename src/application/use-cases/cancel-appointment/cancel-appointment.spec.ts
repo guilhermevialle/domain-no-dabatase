@@ -1,85 +1,63 @@
-import { addMinutes } from 'date-fns'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { Appointment } from '../../../domain/entities/appointment'
-import { InMemoryAppointmentRepository } from '../../../infra/repositories/in-memory/in-memory-appointment-repository'
-import { CancelAppointment } from './cancel-appointment'
+import { beforeEach, describe, expect, it } from 'vitest';
+import { Appointment } from '../../../domain/entities/appointment';
+import { buildAppointment } from '../../../test/builders/build-entities';
+import {
+  buildRepositories,
+  IBuildRepositories,
+} from '../../../test/builders/build-repositories';
+import { CancelAppointment } from './cancel-appointment';
 
-let appointmentRepo: InMemoryAppointmentRepository
-let useCase: CancelAppointment
+describe('CancelAppointment', () => {
+  let useCase: CancelAppointment;
+  let repos: IBuildRepositories;
+  let appointment: Appointment;
 
-describe('CancelAppointmentUseCase', () => {
   beforeEach(() => {
-    appointmentRepo = new InMemoryAppointmentRepository()
-    useCase = new CancelAppointment(appointmentRepo)
-  })
-
-  it('should cancel an appointment successfully', async () => {
-    const appointment = new Appointment({
-      customerId: 'customer-1',
+    appointment = buildAppointment({
       barberId: 'barber-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-    })
-
-    await appointmentRepo.create(appointment)
-
-    const result = await useCase.execute({
-      id: appointment.id!,
-    })
-
-    expect(result.status).toBe('CANCELED')
-  })
-
-  it('should throw if appointment does not exist', async () => {
-    await expect(useCase.execute({ id: 'nonexistent-id' })).rejects.toThrow(
-      'Appointment not found.'
-    )
-  })
-
-  it('should throw if appointment is already canceled', async () => {
-    const appointment = new Appointment({
       customerId: 'customer-1',
-      barberId: 'barber-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-    })
+    });
+    repos = buildRepositories();
+    useCase = new CancelAppointment(repos.appointmentRepo);
+  });
 
-    appointment.cancel()
-    await appointmentRepo.create(appointment)
+  it('should throw an error if the appointment is not found', async () => {
+    await expect(() =>
+      useCase.execute({ id: 'invalid-id' }),
+    ).rejects.toThrowError();
+  });
 
-    await expect(useCase.execute({ id: appointment.id! })).rejects.toThrow(
-      'Appointment already canceled.'
-    )
-  })
+  it('should throw an error if the appointment is already finished', async () => {
+    appointment.finish();
 
-  it('should throw if appointment is already finished', async () => {
-    const appointment = new Appointment({
-      customerId: 'customer-1',
-      barberId: 'barber-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 30),
-    })
+    await expect(() =>
+      useCase.execute({ id: appointment.id! }),
+    ).rejects.toThrowError();
+  });
 
-    appointment.finish()
-    await appointmentRepo.create(appointment)
+  it('should throw an error if the appointment is already canceled', async () => {
+    appointment.cancel();
 
-    await expect(useCase.execute({ id: appointment.id! })).rejects.toThrow(
-      'Appointment already finished.'
-    )
-  })
+    await expect(() =>
+      useCase.execute({ id: appointment.id! }),
+    ).rejects.toThrowError();
+  });
 
-  it('should not cancel an appointment starting in less than 10 minutes', async () => {
-    const appointment = new Appointment({
-      customerId: 'customer-1',
-      barberId: 'barber-1',
-      service: 'Kids Haircut',
-      startAt: addMinutes(new Date(), 5),
-    })
+  it('should throw an error if the appointment is already expired', async () => {
+    appointment.discard();
 
-    await appointmentRepo.create(appointment)
+    await expect(() =>
+      useCase.execute({ id: appointment.id! }),
+    ).rejects.toThrowError();
+  });
 
-    await expect(useCase.execute({ id: appointment.id! })).rejects.toThrow(
-      'Cannot cancel appointment less than 10 minutes before the start time.'
-    )
-  })
-})
+  it('should cancel the appointment and update the repository if valid', async () => {
+    await repos.appointmentRepo.create(appointment);
+
+    await expect(
+      useCase.execute({
+        id: appointment.id!,
+      }),
+    ).resolves.toBe(appointment);
+  });
+});

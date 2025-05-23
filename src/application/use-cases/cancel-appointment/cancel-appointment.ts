@@ -1,11 +1,11 @@
-import { Appointment } from '../../../domain/entities/appointment'
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository'
+import { Appointment } from '../../../domain/entities/appointment';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 
 interface CancelAppointmentRequest {
-  id: string
+  id: string;
 }
 
-type CancelAppointmentResponse = Appointment
+type CancelAppointmentResponse = Appointment;
 
 export class CancelAppointment {
   constructor(private appointmentRepo: IAppointmentRepository) {}
@@ -13,19 +13,22 @@ export class CancelAppointment {
   async execute({
     id,
   }: CancelAppointmentRequest): Promise<CancelAppointmentResponse> {
-    const appointment = await this.appointmentRepo.findById(id)
+    const appointment = await this.appointmentRepo.findById(id);
 
-    if (!appointment) throw new Error('Appointment not found.')
+    if (!appointment) throw new Error('Appointment not found.');
 
     if (appointment.status == 'FINISHED')
-      throw new Error('Appointment already finished.')
+      throw new Error('Appointment already finished.');
 
     if (appointment.status === 'CANCELED')
-      throw new Error('Appointment already canceled.')
+      throw new Error('Appointment already canceled.');
 
-    appointment.cancel()
+    if (appointment.status === 'EXPIRED')
+      throw new Error('Appointment already expired.');
 
-    await this.appointmentRepo.update(appointment)
-    return appointment
+    appointment.cancel();
+
+    await this.appointmentRepo.update(appointment);
+    return appointment;
   }
 }
