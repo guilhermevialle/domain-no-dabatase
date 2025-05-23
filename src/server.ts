@@ -1,41 +1,43 @@
-import { isWithinInterval } from 'date-fns';
+import { addMinutes } from 'date-fns';
+import {
+  appointmentRepo,
+  availabilityService,
+  availableDayRepo,
+  barberRepo,
+  timeSlotRepo,
+} from './config/depencies';
 import { buildAvailability } from './test/builders/build-barber-availability';
-import { buildBarber } from './test/builders/build-entities';
-import { buildRepositories } from './test/builders/build-repositories';
-import { buildServices } from './test/builders/build-services';
+import { buildAppointment, buildBarber } from './test/builders/build-entities';
 
-const repos = buildRepositories();
-const services = buildServices();
 const barber = buildBarber('barber-1');
 const now = new Date();
 
 async function run() {
-  await repos.barberRepo.create(barber);
-  const startAt = new Date();
+  await barberRepo.create(barber);
 
   const { availableDays, timeSlots } = buildAvailability(barber.id!, {
     startDay: 0,
-    endDay: 5,
-    startTime: '00:13',
-    endTime: '00:17',
+    endDay: 6,
+    startTime: '08:00',
+    endTime: '17:40',
   });
 
-  const weekday = startAt.getDay();
-
-  const availableDay = availableDays.find((day) => day.weekday === weekday);
-
-  if (!availableDay) return console.log(false);
-
-  const some = timeSlots.some((slot) =>
-    isWithinInterval(startAt, {
-      start: slot.start.toDate(startAt),
-      end: slot.end.toDate(startAt),
+  await availableDayRepo.createMany(availableDays);
+  await timeSlotRepo.createMany(timeSlots);
+  await appointmentRepo.create(
+    buildAppointment({
+      barberId: barber.id!,
+      customerId: 'customer-1',
+      startAt: addMinutes(now, 10),
     }),
   );
 
-  if (some) return console.log(true);
+  const isAvailableNow = await availabilityService.isBarberAvailable(
+    barber.id!,
+    now,
+  );
 
-  return console.log(false);
+  console.log(isAvailableNow);
 }
 
 run();

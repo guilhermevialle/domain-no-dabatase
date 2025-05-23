@@ -10,8 +10,10 @@ export function buildServices(): IBuildServices {
   const repos = buildRepositories();
 
   const availability = new AvailabilityService(
+    repos.appointmentRepo,
     repos.availableDayRepo,
     repos.timeSlotRepo,
+    repos.barberRepo,
   );
 
   return { availability };

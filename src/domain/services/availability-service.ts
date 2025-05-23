@@ -1,19 +1,21 @@
-import { isWithinInterval } from 'date-fns';
+import { addMinutes, isBefore, isWithinInterval } from 'date-fns';
 import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository';
 import { IAvailableDayRepository } from '../../interfaces/repositories/available-day-repository';
-import { IBarberRepository } from '../../interfaces/repositories/barber-repository';
 import { ITimeSlotRepository } from '../../interfaces/repositories/time-slot-repository';
 import { IAvailabilityService } from '../../interfaces/services/availability-service';
 
 export class AvailabilityService implements IAvailabilityService {
   constructor(
-    private appointmentRepo: IAppointmentRepository,
-    private availableDayRepo: IAvailableDayRepository,
-    private timeSlotRepo: ITimeSlotRepository,
-    private barberRepo: IBarberRepository,
+    private readonly availableDayRepo: IAvailableDayRepository,
+    private readonly timeSlotRepo: ITimeSlotRepository,
+    private readonly appointmentRepo: IAppointmentRepository,
   ) {}
 
   async isBarberAvailable(barberId: string, startAt: Date): Promise<boolean> {
+    const now = new Date();
+
+    if (isBefore(startAt, now)) return false;
+
     const weekday = startAt.getDay();
 
     const availableDay = await this.availableDayRepo.findByWeekdayAndBarberId(
@@ -23,19 +25,24 @@ export class AvailabilityService implements IAvailabilityService {
 
     if (!availableDay) return false;
 
-    const timeSlots = await this.timeSlotRepo.findManyByAvailableDayId(
+    const slots = await this.timeSlotRepo.findManyByAvailableDayId(
       availableDay.id!,
     );
 
-    const some = timeSlots.some((slot) =>
+    const isOverlapping =
+      await this.appointmentRepo.findOverlappingByDateAndBarberId(
+        barberId,
+        startAt,
+        addMinutes(startAt, 30),
+      );
+
+    if (isOverlapping) return false;
+
+    return slots.some((slot) =>
       isWithinInterval(startAt, {
         start: slot.start.toDate(startAt),
         end: slot.end.toDate(startAt),
       }),
     );
-
-    if (some) return true;
-
-    return false;
   }
 }
