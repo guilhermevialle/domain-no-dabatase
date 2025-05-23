@@ -8,6 +8,7 @@ import {
   buildCustomer,
 } from '../../../test/builders/build-entities';
 
+import { buildAvailability } from '../../../test/builders/build-barber-availability';
 import {
   buildDependencies,
   IBuildDependecies,
@@ -73,6 +74,11 @@ describe('CreateAppointment Use Case', () => {
   it('should create an appointment with correct data (duration, price, etc.) if all validations pass', async () => {
     await dependecies.customerRepo.create(customer);
     await dependecies.barberRepo.create(barber);
+
+    const { availableDays, timeSlots } = buildAvailability(barber.id!);
+
+    await dependecies.availableDayRepo.createMany(availableDays);
+    await dependecies.timeSlotRepo.createMany(timeSlots);
 
     const result = await useCase.execute({
       barberId: 'barber-1',

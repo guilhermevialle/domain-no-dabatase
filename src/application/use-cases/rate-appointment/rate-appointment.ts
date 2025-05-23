@@ -32,12 +32,12 @@ export class RateAppointment {
       await this.ratingRepo.findByAppointmentId(appointmentId);
     if (existingRating) throw new Error('Appointment already rated.');
 
-    const _rating = new Rating({
+    const _rating = Rating.create({
       appointmentId,
       barberId,
       customerId,
       comment,
-      rating: rating,
+      rating,
     });
 
     await this.ratingRepo.create(_rating);

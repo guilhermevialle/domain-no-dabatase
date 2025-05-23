@@ -10,7 +10,7 @@ describe('InMemory TimeSlot Repository', () => {
 
   beforeEach(() => {
     timeSlotRepo = new InMemoryTimeSlotRepository();
-    timeSlot = new TimeSlot({
+    timeSlot = TimeSlot.create({
       availableDayId: 'available-day-1',
       start: new Time('08:00'),
       end: new Time('17:30'),

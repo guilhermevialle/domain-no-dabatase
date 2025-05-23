@@ -14,18 +14,19 @@ describe('InMemory Appointment Repository', () => {
     now = new Date();
 
     appointmentRepo = new InMemoryAppointmentRepository();
-    appointment = new Appointment({
+    appointment = Appointment.create({
       barberId: 'barber-1',
       customerId: 'customer-1',
       service: 'Kids Haircut',
       startAt: addMinutes(now, 11),
       priceInCents: 3000,
+      duration: 30,
     });
   });
 
   it('should create a single appointment', async () => {
     await expect(appointmentRepo.create(appointment)).resolves.toBeUndefined();
-    await expect(appointmentRepo.findById(appointment.id!)).resolves.toBe(
+    await expect(appointmentRepo.findById(appointment.id)).resolves.toBe(
       appointment,
     );
   });
@@ -50,7 +51,7 @@ describe('InMemory Appointment Repository', () => {
     appointment.cancel();
 
     await expect(appointmentRepo.update(appointment)).resolves.toBeUndefined();
-    const updatedAppointment = await appointmentRepo.findById(appointment.id!);
+    const updatedAppointment = await appointmentRepo.findById(appointment.id);
 
     expect(updatedAppointment!.status).toBe('CANCELED');
   });
@@ -58,7 +59,7 @@ describe('InMemory Appointment Repository', () => {
   it('should find an appointment by id', async () => {
     await appointmentRepo.create(appointment);
 
-    await expect(appointmentRepo.findById(appointment.id!)).resolves.toBe(
+    await expect(appointmentRepo.findById(appointment.id)).resolves.toBe(
       appointment,
     );
   });

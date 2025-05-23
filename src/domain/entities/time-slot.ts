@@ -16,7 +16,7 @@ type TimeSlotProps = OptionalTimeSlotProps & RequiredTimeSlotProps;
 export class TimeSlot {
   private props: TimeSlotProps;
 
-  constructor(props: TimeSlotProps) {
+  private constructor(props: TimeSlotProps) {
     this.props = {
       ...props,
       id: props.id || randomId(),
@@ -35,12 +35,20 @@ export class TimeSlot {
     }
   }
 
+  static create(props: RequiredTimeSlotProps) {
+    return new TimeSlot(props);
+  }
+
+  static restore(props: Required<TimeSlotProps>) {
+    return new TimeSlot(props);
+  }
+
   public toJSON() {
-    return this.props;
+    return this.props as Required<TimeSlotProps>;
   }
 
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get availableDayId() {

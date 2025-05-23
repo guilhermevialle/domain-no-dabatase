@@ -23,7 +23,7 @@ describe('RateAppointment Use Case', () => {
   let useCase: RateAppointment;
 
   beforeEach(() => {
-    rating = new Rating({
+    rating = Rating.create({
       appointmentId: 'appointment-1',
       barberId: 'barber-1',
       customerId: 'customer-1',

@@ -11,7 +11,7 @@ describe('InMemory Customer Repository', () => {
 
   beforeEach(() => {
     customerRepo = new InMemoryCustomerRepository();
-    customer = new Customer({
+    customer = Customer.create({
       fullName: 'John Doe',
       email: new Email('WQH3T@example.com'),
       phone: new BrazilPhone('27999999999'),
@@ -27,7 +27,7 @@ describe('InMemory Customer Repository', () => {
   it('should update an existing customer', async () => {
     await customerRepo.create(customer);
     await customerRepo.update(
-      new Customer({
+      Customer.restore({
         ...customer.toJSON(),
         fullName: 'John Doe Jr.',
       }),

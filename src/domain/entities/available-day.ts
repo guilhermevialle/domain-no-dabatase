@@ -13,7 +13,7 @@ type AvailableDayProps = OptionalAvailableDayProps & RequiredAvailableDayProps;
 export class AvailableDay {
   private props: AvailableDayProps;
 
-  constructor(props: AvailableDayProps) {
+  private constructor(props: AvailableDayProps) {
     this.props = props;
 
     if (!this.props.id) this.props.id = randomId();
@@ -23,12 +23,20 @@ export class AvailableDay {
     }
   }
 
+  static create(props: RequiredAvailableDayProps) {
+    return new AvailableDay(props);
+  }
+
+  static restore(props: Required<AvailableDayProps>) {
+    return new AvailableDay(props);
+  }
+
   public toJSON() {
-    return this.props;
+    return this.props as Required<AvailableDayProps>;
   }
 
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get barberId() {

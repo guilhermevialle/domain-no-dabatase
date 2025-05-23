@@ -14,15 +14,16 @@ type IBuildAppointment = Partial<AppointmentProps> & {
 };
 
 export const buildAppointment = ({ ...rest }: IBuildAppointment): Appointment =>
-  new Appointment({
+  Appointment.create({
     service: 'Beard Trim',
     priceInCents: 35000,
     startAt: addMinutes(new Date(), 10),
+    duration: 30,
     ...rest,
   });
 
 export const buildBarber = (id: string): Barber =>
-  new Barber({
+  Barber.restore({
     id,
     fullName: 'John doe',
     services: ['Beard Trim', 'Clean Shave'],
@@ -30,7 +31,7 @@ export const buildBarber = (id: string): Barber =>
   });
 
 export const buildCustomer = (id: string): Customer =>
-  new Customer({
+  Customer.restore({
     id,
     fullName: 'Guilherme Vialle',
     email: new Email('guivialle@gmail.com'),

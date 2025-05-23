@@ -9,7 +9,7 @@ describe('InMemory Rating Repository', () => {
 
   beforeEach(() => {
     ratingRepo = new InMemoryRatingRepository();
-    rating = new Rating({
+    rating = Rating.create({
       appointmentId: 'a-1',
       barberId: 'b-1',
       customerId: 'c-1',

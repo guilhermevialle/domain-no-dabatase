@@ -8,8 +8,7 @@ describe('TimeSlot Entity', () => {
 
   beforeEach(() => {
     now = new Date();
-
-    timeSlot = new TimeSlot({
+    timeSlot = TimeSlot.create({
       availableDayId: 'available-day-1',
       start: new Time('08:00'),
       end: new Time('17:00'),
@@ -22,7 +21,7 @@ describe('TimeSlot Entity', () => {
 
   it('should throw if start time and end time are the same', () => {
     expect(() => {
-      new TimeSlot({
+      TimeSlot.restore({
         ...timeSlot.toJSON(),
         start: new Time('08:00'),
         end: new Time('08:00'),
@@ -32,7 +31,7 @@ describe('TimeSlot Entity', () => {
 
   it('should throw if start time is after end time', () => {
     expect(() => {
-      new TimeSlot({
+      TimeSlot.restore({
         ...timeSlot.toJSON(),
         start: new Time('17:00'),
         end: new Time('08:00'),

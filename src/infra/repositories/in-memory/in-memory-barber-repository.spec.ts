@@ -9,7 +9,7 @@ describe('InMemory Barber Repository', () => {
 
   beforeEach(() => {
     baberRepo = new InMemoryBarberRepository();
-    barber = new Barber({
+    barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
       services: ['Beard Trim', 'Clean Shave'],
@@ -29,7 +29,7 @@ describe('InMemory Barber Repository', () => {
     await baberRepo.create(barber);
 
     await baberRepo.update(
-      new Barber({
+      Barber.restore({
         ...barber.toJSON(),
         fullName: 'John Doe Jr.',
       }),

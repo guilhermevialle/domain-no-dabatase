@@ -7,7 +7,7 @@ describe('Customer Entity', () => {
   let customer: Customer;
 
   beforeEach(() => {
-    customer = new Customer({
+    customer = Customer.create({
       fullName: 'John Doe',
       email: new Email('WQH3T@example.com'),
       phone: new BrazilPhone('27999999999'),

@@ -5,7 +5,7 @@ describe('Service Entity', () => {
   let service: Service;
 
   beforeEach(() => {
-    service = new Service({
+    service = Service.create({
       name: 'Beard Trim',
       duration: 30,
       priceInCents: 3000,
@@ -14,7 +14,7 @@ describe('Service Entity', () => {
 
   it('should throw if price is less than 100', () => {
     expect(() => {
-      new Service({
+      Service.restore({
         ...service.toJSON(),
         priceInCents: 99,
       });
@@ -23,7 +23,7 @@ describe('Service Entity', () => {
 
   it('should throw if duration is less than or equal to 0', () => {
     expect(() => {
-      new Service({
+      Service.restore({
         ...service.toJSON(),
         duration: 0,
       });
@@ -32,7 +32,7 @@ describe('Service Entity', () => {
 
   it('should throw if duration is not a multiple of 30', () => {
     expect(() => {
-      new Service({
+      Service.restore({
         ...service.toJSON(),
         duration: 31,
       });

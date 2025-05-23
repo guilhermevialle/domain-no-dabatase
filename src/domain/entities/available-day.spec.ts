@@ -5,8 +5,7 @@ describe('AvailableDay Entity', () => {
   let availableDay: AvailableDay;
 
   beforeEach(() => {
-    availableDay = new AvailableDay({
-      id: 'available-day-1',
+    availableDay = AvailableDay.create({
       barberId: 'barber-1',
       weekday: 1,
     });
@@ -18,7 +17,7 @@ describe('AvailableDay Entity', () => {
 
   it('should throw if weekday is less than 0', () => {
     expect(() => {
-      new AvailableDay({
+      AvailableDay.restore({
         ...availableDay.toJSON(),
         weekday: -1,
       });
@@ -27,7 +26,7 @@ describe('AvailableDay Entity', () => {
 
   it('should throw if weekday is greater than 6', () => {
     expect(() => {
-      new AvailableDay({
+      AvailableDay.restore({
         ...availableDay.toJSON(),
         weekday: 7,
       });

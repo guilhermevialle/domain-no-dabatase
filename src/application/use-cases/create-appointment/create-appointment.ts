@@ -43,7 +43,7 @@ export class CreateAppointment {
     const duration = BASE_DURATIONS_IN_MINUTES[service];
     const priceInCents = BASE_PRICES_IN_CENTS[service];
 
-    const appointment = new Appointment({
+    const appointment = Appointment.create({
       barberId,
       customerId,
       service,
@@ -51,6 +51,15 @@ export class CreateAppointment {
       duration,
       priceInCents,
     });
+
+    const isBarberAvailable = await this.availability.isBarberAvailable(
+      barberId,
+      startAt,
+    );
+
+    if (!isBarberAvailable) throw new Error('Barber is not available.');
+
+    appointment.next();
 
     await this.appointmentRepo.create(appointment);
 

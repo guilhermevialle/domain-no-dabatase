@@ -16,7 +16,7 @@ type BarberProps = OptionalBarberProps & RequiredBarberProps;
 export class Barber {
   private props: BarberProps;
 
-  constructor(props: BarberProps) {
+  private constructor(props: BarberProps) {
     this.props = {
       ...props,
       id: props.id || randomId(),
@@ -40,11 +40,19 @@ export class Barber {
     }
   }
 
+  static create(props: RequiredBarberProps) {
+    return new Barber(props);
+  }
+
+  static restore(props: Required<BarberProps>) {
+    return new Barber(props);
+  }
+
   public toJSON() {
-    return this.props;
+    return this.props as Required<BarberProps>;
   }
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get since() {

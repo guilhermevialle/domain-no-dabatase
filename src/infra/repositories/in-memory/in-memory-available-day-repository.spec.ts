@@ -10,8 +10,7 @@ describe('InMemory AvailableDay Repository', () => {
 
   beforeEach(() => {
     now = new Date();
-    availableDay = new AvailableDay({
-      id: 'available-day-1',
+    availableDay = AvailableDay.create({
       barberId: 'barber-1',
       weekday: 1,
     });

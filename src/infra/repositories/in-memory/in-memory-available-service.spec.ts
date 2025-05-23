@@ -8,7 +8,7 @@ describe('InMemory AvailableService Repository', () => {
   let service: Service;
 
   beforeEach(() => {
-    service = new Service({
+    service = Service.create({
       name: 'Beard Trim',
       duration: 30,
       priceInCents: 3000,

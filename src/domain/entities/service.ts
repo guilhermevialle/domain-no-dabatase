@@ -16,7 +16,7 @@ type ServiceProps = OptionalServiceProps & RequiredServiceProps;
 export class Service {
   private props: ServiceProps;
 
-  constructor(props: ServiceProps) {
+  private constructor(props: ServiceProps) {
     this.props = {
       ...props,
       id: props.id ?? randomId(),
@@ -35,8 +35,20 @@ export class Service {
     }
   }
 
+  static create(props: RequiredServiceProps) {
+    return new Service(props);
+  }
+
+  static restore(props: Required<ServiceProps>) {
+    return new Service(props);
+  }
+
+  public toJSON() {
+    return this.props as Required<ServiceProps>;
+  }
+
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get name() {
@@ -49,9 +61,5 @@ export class Service {
 
   get priceInCents() {
     return this.props.priceInCents;
-  }
-
-  public toJSON() {
-    return this.props;
   }
 }

@@ -2,7 +2,6 @@ import { randomId } from '../../utils/random-id';
 
 type OptionalRatingProps = Partial<{
   id: string;
-  comment: string;
   createdAt: Date;
 }>;
 
@@ -10,6 +9,7 @@ export interface RequiredRatingProps {
   appointmentId: string;
   barberId: string;
   customerId: string;
+  comment: string;
   rating: number;
 }
 
@@ -18,11 +18,10 @@ type RatingProps = RequiredRatingProps & OptionalRatingProps;
 export class Rating {
   private props: RatingProps;
 
-  constructor(props: RatingProps) {
+  private constructor(props: RatingProps) {
     this.props = {
       ...props,
       id: props.id ?? randomId(),
-      comment: props.comment ?? '',
       createdAt: props.createdAt ?? new Date(),
     };
 
@@ -30,6 +29,9 @@ export class Rating {
   }
 
   private validate(props: RatingProps) {
+    if (props.comment.length > 255)
+      throw new Error('Comment must be under 255 characters.');
+
     if (props.rating < 1 || props.rating > 5)
       throw new Error('Rating must be between 1 and 5.');
 
@@ -37,12 +39,20 @@ export class Rating {
       throw new Error('Comment must be under 255 characters.');
   }
 
+  static create(props: RequiredRatingProps) {
+    return new Rating(props);
+  }
+
+  static restore(props: Required<RatingProps>) {
+    return new Rating(props);
+  }
+
   toJSON() {
-    return this.props;
+    return this.props as Required<RatingProps>;
   }
 
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get appointmentId() {
@@ -66,13 +76,6 @@ export class Rating {
   }
 
   get createdAt() {
-    return this.props.createdAt;
+    return this.props.createdAt!;
   }
 }
-
-new Rating({
-  appointmentId: 'appointment-id',
-  barberId: 'barber-id',
-  customerId: 'customer-id',
-  rating: 5,
-});

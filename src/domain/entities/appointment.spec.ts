@@ -9,18 +9,19 @@ describe('Appointment Entity', () => {
 
   beforeEach(() => {
     now = new Date();
-    appointment = new Appointment({
+    appointment = Appointment.create({
       barberId: 'barber-1',
       customerId: 'customer-1',
       priceInCents: 3000,
       service: 'Kids Haircut',
+      duration: 30,
       startAt: addMinutes(now, 10),
     });
   });
 
   it('should create an appointment successfully', () => {
     expect(appointment).toBeTruthy();
-    expect(appointment.status).toBe('SCHEDULED');
+    expect(appointment.status).toBe('PENDING');
     expect(appointment.endAt).toEqual(addMinutes(now, 10 + 30));
     expect(appointment.duration).toBe(30);
     expect(appointment.priceInCents).toBe(3000);
@@ -32,7 +33,7 @@ describe('Appointment Entity', () => {
 
   it('should reject invalid duration (not divisible by 30)', () => {
     expect(() => {
-      new Appointment({
+      Appointment.create({
         ...appointment.toJSON(),
         duration: 15,
       });
@@ -41,7 +42,7 @@ describe('Appointment Entity', () => {
 
   it('should reject appointments scheduled in the past', () => {
     expect(() => {
-      new Appointment({
+      Appointment.create({
         ...appointment.toJSON(),
         startAt: subMinutes(now, 10),
       });
@@ -50,7 +51,7 @@ describe('Appointment Entity', () => {
 
   it('should allow cancellation if more than 10 minutes before start', () => {
     expect(
-      new Appointment({
+      Appointment.create({
         ...appointment.toJSON(),
         startAt: addMinutes(now, 11),
       }).cancel(),
@@ -59,7 +60,7 @@ describe('Appointment Entity', () => {
 
   it('should prevent cancellation if less than 10 minutes before start', () => {
     expect(() => {
-      new Appointment({
+      Appointment.create({
         ...appointment.toJSON(),
         startAt: addMinutes(now, 9),
       }).cancel();

@@ -33,7 +33,7 @@ export function buildAvailability(
   );
 
   days.forEach((weekday) => {
-    const availableDay = new AvailableDay({
+    const availableDay = AvailableDay.restore({
       id: `available-day-${barberId}-${weekday}`,
       barberId,
       weekday,
@@ -42,7 +42,7 @@ export function buildAvailability(
     availableDays.push(availableDay);
 
     slots.forEach((slot, index) => {
-      const timeSlot = new TimeSlot({
+      const timeSlot = TimeSlot.restore({
         id: `time-slot-${barberId}-${weekday}-${index}`,
         availableDayId: availableDay.id!,
         start: new Time(slot.startTime),

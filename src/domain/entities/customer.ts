@@ -15,18 +15,26 @@ type CustomerProps = OptionalCustomerProps & RequiredCustomerProps;
 export class Customer {
   private props: CustomerProps;
 
-  constructor(props: CustomerProps) {
+  private constructor(props: CustomerProps) {
     this.props = props;
 
     if (!this.props.id) this.props.id = randomId();
   }
 
+  static create(props: RequiredCustomerProps) {
+    return new Customer(props);
+  }
+
+  static restore(props: Required<CustomerProps>) {
+    return new Customer(props);
+  }
+
   public toJSON() {
-    return this.props;
+    return this.props as Required<CustomerProps>;
   }
 
   get id() {
-    return this.props.id;
+    return this.props.id!;
   }
 
   get fullName() {

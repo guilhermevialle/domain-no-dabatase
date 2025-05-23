@@ -5,7 +5,7 @@ describe('Rating Entity', () => {
   let rating: Rating;
 
   beforeEach(() => {
-    rating = new Rating({
+    rating = Rating.create({
       appointmentId: 'a-1',
       barberId: 'b-1',
       customerId: 'c-1',
@@ -22,7 +22,7 @@ describe('Rating Entity', () => {
 
   it('should throw if rating is less than 1', () => {
     expect(() => {
-      new Rating({
+      Rating.restore({
         ...rating.toJSON(),
         rating: 0,
       });
@@ -31,7 +31,7 @@ describe('Rating Entity', () => {
 
   it('should throw if rating is greater than 5', () => {
     expect(() => {
-      new Rating({
+      Rating.restore({
         ...rating.toJSON(),
         rating: 6,
       });
@@ -40,7 +40,7 @@ describe('Rating Entity', () => {
 
   it('should throw if comment exceeds 255 characters', () => {
     expect(() => {
-      new Rating({
+      Rating.restore({
         ...rating.toJSON(),
         comment: 'a'.repeat(256),
       });
@@ -52,7 +52,7 @@ describe('Rating Entity', () => {
     const comment = 'Great service!';
     const createdAt = new Date();
 
-    const iRating = new Rating({
+    const iRating = Rating.restore({
       ...rating.toJSON(),
       id,
       comment,

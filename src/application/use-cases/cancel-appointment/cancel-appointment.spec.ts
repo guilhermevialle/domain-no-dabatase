@@ -31,7 +31,7 @@ describe('CancelAppointment Use Case', () => {
     appointment.finish();
 
     await expect(() =>
-      useCase.execute({ id: appointment.id! }),
+      useCase.execute({ id: appointment.id }),
     ).rejects.toThrowError();
   });
 
@@ -39,7 +39,7 @@ describe('CancelAppointment Use Case', () => {
     appointment.cancel();
 
     await expect(() =>
-      useCase.execute({ id: appointment.id! }),
+      useCase.execute({ id: appointment.id }),
     ).rejects.toThrowError();
   });
 
@@ -47,7 +47,7 @@ describe('CancelAppointment Use Case', () => {
     appointment.discard();
 
     await expect(() =>
-      useCase.execute({ id: appointment.id! }),
+      useCase.execute({ id: appointment.id }),
     ).rejects.toThrowError();
   });
 
@@ -56,7 +56,7 @@ describe('CancelAppointment Use Case', () => {
 
     await expect(
       useCase.execute({
-        id: appointment.id!,
+        id: appointment.id,
       }),
     ).resolves.toBe(appointment);
   });

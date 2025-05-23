@@ -5,7 +5,7 @@ describe('Barber Entity', () => {
   let barber: Barber;
 
   beforeEach(() => {
-    barber = new Barber({
+    barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
       since: new Date('2020-01-01'),
@@ -15,7 +15,7 @@ describe('Barber Entity', () => {
 
   it('should throw if no services are provided', () => {
     expect(() => {
-      new Barber({
+      Barber.restore({
         ...barber.toJSON(),
         services: [],
       });
@@ -24,7 +24,7 @@ describe('Barber Entity', () => {
 
   it('should throw if services contain duplicates', () => {
     expect(() => {
-      new Barber({
+      Barber.restore({
         ...barber.toJSON(),
         services: ['Beard Trim', 'Beard Trim'],
       });
