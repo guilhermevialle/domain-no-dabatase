@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AvailableDay } from '../../../domain/entities/available-day';
 import { IAvailableDayRepository } from '../../../interfaces/repositories/available-day-repository';
-import { buildAvailableDay } from '../../../test/builders/build-entities';
 import { InMemoryAvailableDayRepository } from './in-memory-available-day-repository';
 
 describe('InMemoryAvailableDayRepository', () => {
@@ -11,7 +10,6 @@ describe('InMemoryAvailableDayRepository', () => {
 
   beforeEach(() => {
     now = new Date();
-
     availableDay = new AvailableDay({
       id: 'available-day-1',
       barberId: 'barber-1',
@@ -29,7 +27,6 @@ describe('InMemoryAvailableDayRepository', () => {
   });
 
   it('should return all available days for a given barber', async () => {
-    let availableDay = buildAvailableDay('barber-1');
     await availableDayRepo.create(availableDay);
     const availableDays = await availableDayRepo.findManyByBarberId('barber-1');
 
