@@ -4,8 +4,16 @@ import { IAvailableDayRepository } from '../../../interfaces/repositories/availa
 export class InMemoryAvailableDayRepository implements IAvailableDayRepository {
   private storage: AvailableDay[] = [];
 
+  async listAll(): Promise<AvailableDay[]> {
+    return this.storage;
+  }
+
   async create(day: AvailableDay): Promise<void> {
     this.storage.push(day);
+  }
+
+  async createMany(days: AvailableDay[]): Promise<void> {
+    this.storage.push(...days);
   }
 
   async findManyByBarberId(barberId: string): Promise<AvailableDay[]> {

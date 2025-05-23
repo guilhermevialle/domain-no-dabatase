@@ -8,11 +8,11 @@ export class InMemoryTimeSlotRepository implements ITimeSlotRepository {
     this.storage.push(timeSlot);
   }
 
-  async findManyByAvailableDayId(id: string): Promise<TimeSlot[]> {
-    const slots = this.storage.filter(
-      (timeSlot) => timeSlot.availableDayId === id,
-    );
+  async createMany(timeSlots: TimeSlot[]): Promise<void> {
+    this.storage.push(...timeSlots);
+  }
 
-    return slots;
+  async findManyByAvailableDayId(id: string): Promise<TimeSlot[]> {
+    return this.storage.filter((timeSlot) => timeSlot.availableDayId === id);
   }
 }

@@ -51,6 +51,10 @@ export class Time {
     );
   }
 
+  public toDate(date: Date = new Date()) {
+    return parse(this._value, 'HH:mm', date);
+  }
+
   // Valida o formato da string (HH:mm)
   static isValidFormat(value: string): boolean {
     return /^\d{2}:\d{2}$/.test(value) && value >= '00:00' && value <= '23:59';

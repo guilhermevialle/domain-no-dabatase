@@ -35,7 +35,7 @@ describe('CreateAppointment Use Case', () => {
       repos.appointmentRepo,
       repos.customerRepo,
       repos.barberRepo,
-      services.barberAvailability,
+      services.availability,
     );
   });
 

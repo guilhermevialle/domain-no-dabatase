@@ -7,7 +7,7 @@ import { Appointment } from '../../../domain/entities/appointment';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
-import { IBarberAvailabilityService } from '../../../interfaces/services/barber-availability-service';
+import { IAvailabilityService } from '../../../interfaces/services/availability-service';
 
 interface CreateAppointmentRequest {
   customerId: string;
@@ -23,7 +23,7 @@ export class CreateAppointment {
     private appointmentRepo: IAppointmentRepository,
     private customerRepo: ICustomerRepository,
     private barberRepo: IBarberRepository,
-    private barberAvailability: IBarberAvailabilityService,
+    private availability: IAvailabilityService,
   ) {}
 
   async execute({
