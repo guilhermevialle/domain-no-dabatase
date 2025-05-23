@@ -11,7 +11,11 @@ export class AvailabilityService implements IAvailabilityService {
     private readonly appointmentRepo: IAppointmentRepository,
   ) {}
 
-  async isBarberAvailable(barberId: string, startAt: Date): Promise<boolean> {
+  async isBarberAvailable(
+    barberId: string,
+    startAt: Date,
+    ignoreAppointmentId?: string,
+  ): Promise<boolean> {
     const now = new Date();
 
     if (isBefore(startAt, now)) return false;
@@ -34,6 +38,7 @@ export class AvailabilityService implements IAvailabilityService {
         barberId,
         startAt,
         addMinutes(startAt, 30),
+        ignoreAppointmentId,
       );
 
     if (isOverlapping) return false;

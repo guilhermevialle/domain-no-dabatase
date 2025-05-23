@@ -9,12 +9,12 @@ export class InMemoryAppointmentRepository implements IAppointmentRepository {
     barberId: string,
     startAt: Date,
     endAt: Date,
-    excludeAppointmentId?: string,
+    ignoreAppointmentId?: string,
   ): Promise<Appointment | null> {
     const appointment = this.storage.find(
       (appointment) =>
         appointment.barberId === barberId &&
-        appointment.id !== excludeAppointmentId &&
+        appointment.id !== ignoreAppointmentId &&
         areIntervalsOverlapping(
           { start: startAt, end: endAt },
           { start: appointment.startAt, end: appointment.endAt },

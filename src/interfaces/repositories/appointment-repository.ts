@@ -12,7 +12,7 @@ export interface IAppointmentRepository {
     barberId: string,
     startAt: Date,
     endAt: Date,
-    excludeAppointmentId?: string,
+    ignoreAppointmentId?: string,
   ) => Promise<Appointment | null>;
   findManyByBarberIdInRange: (
     barberId: string,

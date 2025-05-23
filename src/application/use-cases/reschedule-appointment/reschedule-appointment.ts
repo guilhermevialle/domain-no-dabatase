@@ -1,7 +1,6 @@
 import { Appointment } from '../../../domain/entities/appointment';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 import { IAvailabilityService } from '../../../interfaces/services/availability-service';
-import { buildAppointment } from '../../../test/builders/build-entities';
 
 interface RescheduleAppointmentRequest {
   id: string;
@@ -20,10 +19,19 @@ export class RescheduleAppointment {
     id,
     startAt,
   }: RescheduleAppointmentRequest): Promise<RescheduleAppointmentResponse> {
-    const appointment = buildAppointment({
-      barberId: 'barber-1',
-      customerId: 'customer-1',
-    });
+    const appointment = await this.appointmentRepo.findById(id);
+
+    if (!appointment) throw new Error('Appointment not found.');
+
+    const isAvailable = await this.availability.isBarberAvailable(
+      appointment.barberId,
+      startAt,
+      id,
+    );
+
+    if (!isAvailable) throw new Error('Barber is not available at this time.');
+
+    appointment.reschedule(startAt);
 
     await this.appointmentRepo.update(appointment);
 

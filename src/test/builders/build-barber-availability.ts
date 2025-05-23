@@ -2,7 +2,7 @@ import { AvailableDay } from '../../domain/entities/available-day';
 import { TimeSlot } from '../../domain/entities/time-slot';
 import { Time } from '../../domain/value-objects/time';
 
-type BuildAvailabilityOptions = Partial<{
+type AvailabilityProps = Partial<{
   startDay: number;
   endDay: number;
   startTime: string;
@@ -16,7 +16,7 @@ export function buildAvailability(
     endDay = 6,
     startTime = '00:00',
     endTime = '23:59',
-  }: BuildAvailabilityOptions = {},
+  }: AvailabilityProps = {},
 ): {
   availableDays: AvailableDay[];
   timeSlots: TimeSlot[];

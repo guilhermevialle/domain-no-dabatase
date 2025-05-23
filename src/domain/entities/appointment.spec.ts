@@ -72,7 +72,13 @@ describe('Appointment Entity', () => {
   });
 
   it('should reschedule appointment if start date is valid and more than 10 minutes ahead', () => {
-    appointment.reschedule(addMinutes(now, 10));
+    appointment.reschedule(addMinutes(now, 11));
+  });
+
+  it('should prevent rescheduling if start date is less than 10 minutes ahead', () => {
+    expect(() => {
+      appointment.reschedule(addMinutes(now, 9));
+    }).toThrow();
   });
 
   it('should prevent rescheduling if start date is in the past', () => {

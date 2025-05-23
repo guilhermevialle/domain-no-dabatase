@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Appointment } from '../../../domain/entities/appointment';
-import { buildAppointment } from '../../../test/builders/build-entities';
 import {
-  buildRepositories,
-  IBuildRepositories,
-} from '../../../test/builders/build-repositories';
+  buildDependencies,
+  IBuildDependecies,
+} from '../../../test/builders/build-dependencies';
+import { buildAppointment } from '../../../test/builders/build-entities';
 import { CancelAppointment } from './cancel-appointment';
 
 describe('CancelAppointment', () => {
   let useCase: CancelAppointment;
-  let repos: IBuildRepositories;
+  let dependecies: IBuildDependecies;
   let appointment: Appointment;
 
   beforeEach(() => {
+    dependecies = buildDependencies();
     appointment = buildAppointment({
       barberId: 'barber-1',
       customerId: 'customer-1',
     });
-    repos = buildRepositories();
-    useCase = new CancelAppointment(repos.appointmentRepo);
+    useCase = new CancelAppointment(dependecies.appointmentRepo);
   });
 
   it('should throw an error if the appointment is not found', async () => {
@@ -52,7 +52,7 @@ describe('CancelAppointment', () => {
   });
 
   it('should cancel the appointment and update the repository if valid', async () => {
-    await repos.appointmentRepo.create(appointment);
+    await dependecies.appointmentRepo.create(appointment);
 
     await expect(
       useCase.execute({

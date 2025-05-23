@@ -4,14 +4,14 @@ import { Barber } from '../../../domain/entities/barber';
 import { Customer } from '../../../domain/entities/customer';
 import { Rating } from '../../../domain/entities/rating';
 import {
+  buildDependencies,
+  IBuildDependecies,
+} from '../../../test/builders/build-dependencies';
+import {
   buildAppointment,
   buildBarber,
   buildCustomer,
 } from '../../../test/builders/build-entities';
-import {
-  buildRepositories,
-  IBuildRepositories,
-} from '../../../test/builders/build-repositories';
 import { RateAppointment } from './rate-appointment';
 
 describe('RateAppointment Use Case', () => {
@@ -19,7 +19,7 @@ describe('RateAppointment Use Case', () => {
   let barber: Barber;
   let customer: Customer;
   let appointment: Appointment;
-  let repos: IBuildRepositories;
+  let dependencies: IBuildDependecies;
   let useCase: RateAppointment;
 
   beforeEach(() => {
@@ -37,8 +37,11 @@ describe('RateAppointment Use Case', () => {
       barberId: 'barber-1',
       customerId: 'customer-1',
     });
-    repos = buildRepositories();
-    useCase = new RateAppointment(repos.ratingRepo, repos.appointmentRepo);
+    dependencies = buildDependencies();
+    useCase = new RateAppointment(
+      dependencies.ratingRepo,
+      dependencies.appointmentRepo,
+    );
   });
 
   it('should throw an error if the appointment is not found', async () => {
@@ -61,7 +64,7 @@ describe('RateAppointment Use Case', () => {
   });
 
   it('should throw an error if the appointment is already rated', async () => {
-    await repos.ratingRepo.create(rating);
+    await dependencies.ratingRepo.create(rating);
 
     await expect(() =>
       useCase.execute({
@@ -71,9 +74,9 @@ describe('RateAppointment Use Case', () => {
   });
 
   it('should create and return a new rating if all validations pass', async () => {
-    await repos.barberRepo.create(barber);
-    await repos.customerRepo.create(customer);
-    await repos.appointmentRepo.create(appointment);
+    await dependencies.barberRepo.create(barber);
+    await dependencies.customerRepo.create(customer);
+    await dependencies.appointmentRepo.create(appointment);
 
     const result = await useCase.execute({
       ...rating.toJSON(),

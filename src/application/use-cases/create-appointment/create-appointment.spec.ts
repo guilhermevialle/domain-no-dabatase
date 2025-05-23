@@ -7,35 +7,30 @@ import {
   buildBarber,
   buildCustomer,
 } from '../../../test/builders/build-entities';
+
 import {
-  buildRepositories,
-  IBuildRepositories,
-} from '../../../test/builders/build-repositories';
-import {
-  buildServices,
-  IBuildServices,
-} from '../../../test/builders/build-services';
+  buildDependencies,
+  IBuildDependecies,
+} from '../../../test/builders/build-dependencies';
 import { CreateAppointment } from './create-appointment';
 
 describe('CreateAppointment Use Case', () => {
+  let dependecies: IBuildDependecies;
   let useCase: CreateAppointment;
-  let repos: IBuildRepositories;
   let barber: Barber;
   let customer: Customer;
-  let services: IBuildServices;
   let now: Date;
 
   beforeEach(() => {
     now = new Date();
-    repos = buildRepositories();
-    services = buildServices();
+    dependecies = buildDependencies();
     barber = buildBarber('barber-1');
     customer = buildCustomer('customer-1');
     useCase = new CreateAppointment(
-      repos.appointmentRepo,
-      repos.customerRepo,
-      repos.barberRepo,
-      services.availability,
+      dependecies.appointmentRepo,
+      dependecies.customerRepo,
+      dependecies.barberRepo,
+      dependecies.availabilityService,
     );
   });
 
@@ -62,8 +57,8 @@ describe('CreateAppointment Use Case', () => {
   });
 
   it('should throw an error if the barber does not provide the requested service', async () => {
-    await repos.customerRepo.create(customer);
-    await repos.barberRepo.create(barber);
+    await dependecies.customerRepo.create(customer);
+    await dependecies.barberRepo.create(barber);
 
     await expect(() =>
       useCase.execute({
@@ -76,8 +71,8 @@ describe('CreateAppointment Use Case', () => {
   });
 
   it('should create an appointment with correct data (duration, price, etc.) if all validations pass', async () => {
-    await repos.customerRepo.create(customer);
-    await repos.barberRepo.create(barber);
+    await dependecies.customerRepo.create(customer);
+    await dependecies.barberRepo.create(barber);
 
     const result = await useCase.execute({
       barberId: 'barber-1',

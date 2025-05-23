@@ -87,4 +87,33 @@ describe('Availability Service', () => {
 
     expect(isAvailable).toBe(false);
   });
+
+  it('should return true when ignore overlapping provided appointment id', async () => {
+    await appointmentRepo.create(
+      buildAppointment({
+        id: 'appointment-2',
+        barberId: 'barber-2',
+        customerId: 'customer-2',
+        startAt: addMinutes(now, 10),
+      }),
+    );
+
+    const { availableDays, timeSlots } = buildAvailability('barber-2', {
+      startDay: 0,
+      endDay: 6,
+      startTime: '00:00',
+      endTime: '23:59',
+    });
+
+    await availableDayRepo.createMany(availableDays);
+    await timeSlotRepo.createMany(timeSlots);
+
+    const isAvailable = await availabilityService.isBarberAvailable(
+      'barber-2',
+      addMinutes(now, 10),
+      'appointment-2',
+    );
+
+    expect(isAvailable).toBe(true);
+  });
 });

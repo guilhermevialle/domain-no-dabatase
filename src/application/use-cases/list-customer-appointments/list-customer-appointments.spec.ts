@@ -1,26 +1,26 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Customer } from '../../../domain/entities/customer';
 import {
+  buildDependencies,
+  IBuildDependecies,
+} from '../../../test/builders/build-dependencies';
+import {
   buildAppointment,
   buildCustomer,
 } from '../../../test/builders/build-entities';
-import {
-  buildRepositories,
-  IBuildRepositories,
-} from '../../../test/builders/build-repositories';
 import { ListCustomerAppointments } from './list-customer-appointments';
 
 describe('ListCustomerAppointments Use Case', () => {
-  let repos: IBuildRepositories;
+  let dependecies: IBuildDependecies;
   let customer: Customer;
   let useCase: ListCustomerAppointments;
 
   beforeEach(() => {
-    repos = buildRepositories();
+    dependecies = buildDependencies();
     customer = buildCustomer('customer-1');
     useCase = new ListCustomerAppointments(
-      repos.appointmentRepo,
-      repos.customerRepo,
+      dependecies.appointmentRepo,
+      dependecies.customerRepo,
     );
   });
 
@@ -31,8 +31,8 @@ describe('ListCustomerAppointments Use Case', () => {
   });
 
   it('should return the list of appointments for the given customer id', async () => {
-    await repos.customerRepo.create(customer);
-    await repos.appointmentRepo.createMany([
+    await dependecies.customerRepo.create(customer);
+    await dependecies.appointmentRepo.createMany([
       buildAppointment({
         barberId: 'barber-1',
         customerId: customer.id!,
