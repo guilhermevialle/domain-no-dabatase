@@ -136,35 +136,62 @@ describe('InMemoryAppointmentRepository', () => {
     ).resolves.toEqual(appointments);
   });
 
-  it('should detect overlapping appointment for barber', async () => {
+  it('should return null if there are no overlapping appointments', async () => {
+    await expect(
+      appointmentRepo.findOverlappingByDateAndBarberId(
+        'barber-1',
+        addMinutes(now, 10),
+        addMinutes(now, 20),
+      ),
+    ).resolves.toBeNull();
+  });
+
+  it('should return the overlapping appointment if one exists', async () => {
     const appointments = [
       buildAppointment({
         barberId: 'barber-1',
         customerId: 'customer-1',
+        startAt: addMinutes(now, 15),
       }),
       buildAppointment({
         barberId: 'barber-1',
         customerId: 'customer-2',
+        startAt: addMinutes(now, 20),
       }),
     ];
 
     await appointmentRepo.createMany(appointments);
     await expect(
-      appointmentRepo.isOverlappingByDateAndBarberId(
+      appointmentRepo.findOverlappingByDateAndBarberId(
         'barber-1',
         addMinutes(now, 10),
         addMinutes(now, 20),
       ),
-    ).resolves.toBe(true);
+    ).resolves.toEqual(appointments[0]);
   });
 
-  it('should return false if no overlap is found', async () => {
+  it('should not consider the appointment with the excluded ID', async () => {
+    const appointments = [
+      buildAppointment({
+        barberId: 'barber-1',
+        customerId: 'customer-1',
+        startAt: addMinutes(now, 15),
+      }),
+      buildAppointment({
+        barberId: 'barber-1',
+        customerId: 'customer-2',
+        startAt: addMinutes(now, 20),
+      }),
+    ];
+
+    await appointmentRepo.createMany(appointments);
     await expect(
-      appointmentRepo.isOverlappingByDateAndBarberId(
+      appointmentRepo.findOverlappingByDateAndBarberId(
         'barber-1',
         addMinutes(now, 10),
         addMinutes(now, 20),
+        appointments[0].id,
       ),
-    ).resolves.toBe(false);
+    ).resolves.toBeNull();
   });
 });

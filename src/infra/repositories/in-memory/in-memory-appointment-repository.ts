@@ -5,6 +5,26 @@ import { IAppointmentRepository } from '../../../interfaces/repositories/appoint
 export class InMemoryAppointmentRepository implements IAppointmentRepository {
   private storage: Appointment[] = [];
 
+  async findOverlappingByDateAndBarberId(
+    barberId: string,
+    startAt: Date,
+    endAt: Date,
+    excludeAppointmentId?: string,
+  ): Promise<Appointment | null> {
+    const appointment = this.storage.find(
+      (appointment) =>
+        appointment.barberId === barberId &&
+        appointment.id !== excludeAppointmentId &&
+        areIntervalsOverlapping(
+          { start: startAt, end: endAt },
+          { start: appointment.startAt, end: appointment.endAt },
+          { inclusive: false },
+        ),
+    );
+
+    return appointment ?? null;
+  }
+
   async findManyExpiredAppointments(): Promise<Appointment[]> {
     return this.storage.filter(
       (appointment) =>
