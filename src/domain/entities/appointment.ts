@@ -238,7 +238,7 @@ export class Appointment {
   }
 
   get endAt() {
-    return addMinutes(this.props.startAt, this.props.duration!);
+    return addMinutes(this.props.startAt, this.props.duration);
   }
 
   get createdAt() {

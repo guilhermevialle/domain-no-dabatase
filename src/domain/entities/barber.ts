@@ -1,12 +1,15 @@
 import { AvailableService } from '../../@types/service';
 import { randomId } from '../../utils/random-id';
+import {
+  DuplicateServiceError,
+  EmptyServicesError,
+} from '../errors/barber-errors';
 
 type OptionalBarberProps = Partial<{
   id: string;
 }>;
 
 interface RequiredBarberProps {
-  since: Date;
   fullName: string;
   services: AvailableService[];
 }
@@ -25,19 +28,17 @@ export class Barber {
     this.validate(this.props);
   }
 
-  public canDoService(service: AvailableService): boolean {
+  public offersService(service: AvailableService): boolean {
     return this.props.services.includes(service);
   }
 
   private validate(props: BarberProps) {
-    const servicesSet = new Set(props.services);
+    const offeredServices = new Set(props.services);
 
-    if (servicesSet.size < 1)
-      throw new Error('Must have at least 1 specialty.');
+    if (offeredServices.size < 1) throw new EmptyServicesError();
 
-    if (servicesSet.size !== props.services.length) {
-      throw new Error('Duplicate services are not allowed.');
-    }
+    if (offeredServices.size !== props.services.length)
+      throw new DuplicateServiceError();
   }
 
   static create(props: RequiredBarberProps) {
@@ -53,10 +54,6 @@ export class Barber {
   }
   get id() {
     return this.props.id!;
-  }
-
-  get since() {
-    return this.props.since;
   }
 
   get fullName() {

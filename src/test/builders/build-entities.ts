@@ -27,7 +27,6 @@ export const buildBarber = (id: string): Barber =>
     id,
     fullName: 'John doe',
     services: ['Beard Trim', 'Clean Shave'],
-    since: new Date('2011-01-01'),
   });
 
 export const buildCustomer = (id: string): Customer =>

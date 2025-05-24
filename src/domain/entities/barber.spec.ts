@@ -8,7 +8,6 @@ describe('Barber Entity', () => {
     barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
-      since: new Date('2020-01-01'),
       services: ['Beard Trim', 'Clean Shave'],
     });
   });
@@ -32,10 +31,10 @@ describe('Barber Entity', () => {
   });
 
   it('should return true if barber can do the given service', () => {
-    expect(barber.canDoService('Beard Trim')).toBe(true);
+    expect(barber.offersService('Beard Trim')).toBe(true);
   });
 
   it('should return false if barber cannot do the given service', () => {
-    expect(barber.canDoService('Kids Haircut')).toBe(false);
+    expect(barber.offersService('Kids Haircut')).toBe(false);
   });
 });

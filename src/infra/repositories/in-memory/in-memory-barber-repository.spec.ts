@@ -13,7 +13,6 @@ describe('InMemory Barber Repository', () => {
       id: 'barber-1',
       fullName: 'John Doe',
       services: ['Beard Trim', 'Clean Shave'],
-      since: new Date('2020-01-01'),
     });
   });
 

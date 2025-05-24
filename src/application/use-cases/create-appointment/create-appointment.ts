@@ -37,7 +37,7 @@ export class CreateAppointment {
 
     if (!customer) throw new Error('Customer not found.');
     if (!barber) throw new Error('Barber not found.');
-    if (!barber.canDoService(service))
+    if (!barber.offersService(service))
       throw new Error(`Barber does not provide the service ${service}.`);
 
     const duration = BASE_DURATIONS_IN_MINUTES[service];
