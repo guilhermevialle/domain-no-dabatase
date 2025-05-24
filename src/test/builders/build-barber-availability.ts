@@ -45,8 +45,8 @@ export function buildAvailability(
       const timeSlot = TimeSlot.restore({
         id: `time-slot-${barberId}-${weekday}-${index}`,
         availableDayId: availableDay.id!,
-        start: new Time(slot.startTime),
-        end: new Time(slot.endTime),
+        start: Time.create(slot.startTime),
+        end: Time.create(slot.endTime),
       });
 
       timeSlots.push(timeSlot);

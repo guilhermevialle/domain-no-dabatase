@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { BrazilPhone } from '../value-objects/brazil-phone';
 import { Email } from '../value-objects/email';
-import { BrazilPhone } from '../value-objects/phone';
 import { Customer } from './customer';
 
 describe('Customer Entity', () => {
@@ -9,8 +9,8 @@ describe('Customer Entity', () => {
   beforeEach(() => {
     customer = Customer.create({
       fullName: 'John Doe',
-      email: new Email('WQH3T@example.com'),
-      phone: new BrazilPhone('27999999999'),
+      email: Email.create('WQH3T@example.com'),
+      phone: BrazilPhone.create('27999999999'),
     });
   });
 

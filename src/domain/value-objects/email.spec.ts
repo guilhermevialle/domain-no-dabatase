@@ -5,7 +5,7 @@ describe('Email Value Object', () => {
   let email: Email;
 
   beforeEach(() => {
-    email = new Email('WQH3T@example.com');
+    email = Email.create('WQH3T@example.com');
   });
 
   it('should create an Email with valid input', () => {
@@ -17,6 +17,6 @@ describe('Email Value Object', () => {
   });
 
   it('should throw if email is invalid', () => {
-    expect(() => new Email('invalid-email')).toThrow();
+    expect(() => Email.create('invalid-email')).toThrow();
   });
 });

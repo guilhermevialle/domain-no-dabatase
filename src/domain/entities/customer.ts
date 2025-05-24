@@ -1,6 +1,6 @@
 import { randomId } from '../../utils/random-id';
+import { BrazilPhone } from '../value-objects/brazil-phone';
 import { Email } from '../value-objects/email';
-import { BrazilPhone } from '../value-objects/phone';
 
 type OptionalCustomerProps = Partial<{
   id: string;

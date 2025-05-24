@@ -10,8 +10,8 @@ describe('TimeSlot Entity', () => {
     now = new Date();
     timeSlot = TimeSlot.create({
       availableDayId: 'available-day-1',
-      start: new Time('08:00'),
-      end: new Time('17:00'),
+      start: Time.create('08:00'),
+      end: Time.create('17:00'),
     });
   });
 
@@ -23,8 +23,8 @@ describe('TimeSlot Entity', () => {
     expect(() => {
       TimeSlot.restore({
         ...timeSlot.toJSON(),
-        start: new Time('08:00'),
-        end: new Time('08:00'),
+        start: Time.create('08:00'),
+        end: Time.create('08:00'),
       });
     }).toThrow();
   });
@@ -33,8 +33,8 @@ describe('TimeSlot Entity', () => {
     expect(() => {
       TimeSlot.restore({
         ...timeSlot.toJSON(),
-        start: new Time('17:00'),
-        end: new Time('08:00'),
+        start: Time.create('17:00'),
+        end: Time.create('08:00'),
       });
     }).toThrow();
   });

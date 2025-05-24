@@ -1,12 +1,12 @@
-import { addMinutes } from 'date-fns';
+import { addDays } from 'date-fns';
 import {
   Appointment,
   AppointmentProps,
 } from '../../domain/entities/appointment';
 import { Barber } from '../../domain/entities/barber';
 import { Customer } from '../../domain/entities/customer';
+import { BrazilPhone } from '../../domain/value-objects/brazil-phone';
 import { Email } from '../../domain/value-objects/email';
-import { BrazilPhone } from '../../domain/value-objects/phone';
 
 type IBuildAppointment = Partial<AppointmentProps> & {
   barberId: string;
@@ -17,7 +17,7 @@ export const buildAppointment = ({ ...rest }: IBuildAppointment): Appointment =>
   Appointment.create({
     service: 'Beard Trim',
     priceInCents: 35000,
-    startAt: addMinutes(new Date(), 10),
+    startAt: addDays(new Date(), 10),
     duration: 30,
     ...rest,
   });
@@ -34,6 +34,6 @@ export const buildCustomer = (id: string): Customer =>
   Customer.restore({
     id,
     fullName: 'Guilherme Vialle',
-    email: new Email('guivialle@gmail.com'),
-    phone: new BrazilPhone('27999999999'),
+    email: Email.create('guivialle@gmail.com'),
+    phone: BrazilPhone.create('27999999999'),
   });

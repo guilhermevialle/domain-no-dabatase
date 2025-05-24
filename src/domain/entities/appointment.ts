@@ -69,13 +69,13 @@ export class Appointment {
     this.touch();
   }
 
-  public next() {
-    this.props.status = 'SCHEDULED';
+  public discard() {
+    this.props.status = 'EXPIRED';
     this.touch();
   }
 
-  public discard() {
-    this.props.status = 'EXPIRED';
+  public next() {
+    this.props.status = 'SCHEDULED';
     this.touch();
   }
 
@@ -108,7 +108,7 @@ export class Appointment {
   }
 
   public getTime() {
-    return new Time(this.startAt);
+    return Time.create(this.startAt);
   }
 
   public getDay() {

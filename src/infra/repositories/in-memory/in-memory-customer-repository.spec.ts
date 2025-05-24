@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Customer } from '../../../domain/entities/customer';
+import { BrazilPhone } from '../../../domain/value-objects/brazil-phone';
 import { Email } from '../../../domain/value-objects/email';
-import { BrazilPhone } from '../../../domain/value-objects/phone';
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
 import { InMemoryCustomerRepository } from './in-memory-customer-repository';
 
@@ -13,8 +13,8 @@ describe('InMemory Customer Repository', () => {
     customerRepo = new InMemoryCustomerRepository();
     customer = Customer.create({
       fullName: 'John Doe',
-      email: new Email('WQH3T@example.com'),
-      phone: new BrazilPhone('27999999999'),
+      email: Email.create('WQH3T@example.com'),
+      phone: BrazilPhone.create('27999999999'),
     });
   });
 

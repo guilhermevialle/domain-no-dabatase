@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Lista de DDDs válidos do Brasil
 const VALID_DDDS = [
   11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 28, 31, 32, 33, 34, 35,
   37, 38, 41, 42, 43, 44, 45, 46, 47, 48, 49, 51, 53, 54, 55, 61, 62, 63, 64,
@@ -10,7 +9,6 @@ const VALID_DDDS = [
 
 type ValidDDD = (typeof VALID_DDDS)[number];
 
-// Schema para validação de números de telefone brasileiros
 const brazilPhoneSchema = z.string().refine(
   (value) => {
     const digits = value.replace(/\D/g, '');
@@ -32,7 +30,6 @@ const brazilPhoneSchema = z.string().refine(
   },
 );
 
-// Função utilitária para normalizar o número de telefone
 const normalizePhone = (value: string): string => {
   const digits = value.replace(/\D/g, '');
   return digits.startsWith('55') ? digits : `55${digits}`;
@@ -41,8 +38,12 @@ const normalizePhone = (value: string): string => {
 export class BrazilPhone {
   private _value: string;
 
-  constructor(value: string) {
+  private constructor(value: string) {
     this._value = brazilPhoneSchema.parse(normalizePhone(value));
+  }
+
+  static create(value: string): BrazilPhone {
+    return new BrazilPhone(value);
   }
 
   get value(): string {
