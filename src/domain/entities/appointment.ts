@@ -2,6 +2,14 @@ import { addMinutes, differenceInMinutes, getDay, isPast } from 'date-fns';
 import { AppointmentStatus } from '../../@types/appointment';
 import { AvailableService } from '../../@types/service';
 import { randomId } from '../../utils/random-id';
+import {
+  AppointmentAlreadyCanceledError,
+  AppointmentAlreadyExpiredError,
+  AppointmentAlreadyFinishedError,
+  AppointmentAlreadyScheduledError,
+  AppointmentNotScheduledError,
+} from '../errors/appointment-errors';
+import { PastDateError } from '../errors/shared/date-in-past';
 import { Time } from '../value-objects/time';
 
 type OptionalAppointmentProps = Partial<{
@@ -25,6 +33,7 @@ export type AppointmentProps = RequiredAppointmentProps &
   OptionalAppointmentProps;
 
 export class Appointment {
+  private events: string[] = [];
   private props: AppointmentProps;
 
   private constructor(props: AppointmentProps) {
@@ -56,8 +65,7 @@ export class Appointment {
       throw new Error('Duration must be a multiple of 30 minutes.');
     }
 
-    if (isPast(props.startAt))
-      throw new Error('Start date must be in the future.');
+    if (isPast(props.startAt)) throw new PastDateError();
   }
 
   private touch() {
@@ -65,21 +73,75 @@ export class Appointment {
   }
 
   public finish() {
+    if (this.props.status === 'PENDING')
+      throw new AppointmentNotScheduledError();
+
+    if (this.props.status === 'CANCELED')
+      throw new AppointmentAlreadyCanceledError();
+
+    if (this.props.status === 'EXPIRED')
+      throw new AppointmentAlreadyExpiredError();
+
+    if (this.props.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
+
     this.props.status = 'FINISHED';
     this.touch();
+
+    this.events.push('appointment.finished');
   }
 
-  public discard() {
+  public expire() {
+    if (this.props.status === 'PENDING')
+      throw new AppointmentNotScheduledError();
+
+    if (this.props.status === 'CANCELED')
+      throw new AppointmentAlreadyCanceledError();
+
+    if (this.props.status === 'EXPIRED')
+      throw new AppointmentAlreadyExpiredError();
+
+    if (this.props.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
+
     this.props.status = 'EXPIRED';
     this.touch();
+
+    this.events.push('appointment.expired');
   }
 
-  public next() {
+  public schedule() {
+    if (this.props.status === 'SCHEDULED')
+      throw new AppointmentAlreadyScheduledError();
+
+    if (this.props.status === 'CANCELED')
+      throw new AppointmentAlreadyCanceledError();
+
+    if (this.props.status === 'EXPIRED')
+      throw new AppointmentAlreadyExpiredError();
+
+    if (this.props.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
+
     this.props.status = 'SCHEDULED';
     this.touch();
+
+    this.events.push('appointment.scheduled');
   }
 
   public cancel() {
+    if (this.props.status === 'PENDING')
+      throw new AppointmentNotScheduledError();
+
+    if (this.props.status === 'CANCELED')
+      throw new AppointmentAlreadyCanceledError();
+
+    if (this.props.status === 'EXPIRED')
+      throw new AppointmentAlreadyExpiredError();
+
+    if (this.props.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
+
     const now = new Date();
     const minutesUntilStart = differenceInMinutes(this.props.startAt, now);
 
@@ -90,21 +152,44 @@ export class Appointment {
 
     this.props.status = 'CANCELED';
     this.touch();
+    this.events.push('appointment.canceled');
   }
 
-  public reschedule(newDate: Date) {
-    if (isPast(newDate)) throw new Error('Start date must be in the future.');
+  public reschedule(date: Date) {
+    if (this.props.status === 'PENDING')
+      throw new AppointmentNotScheduledError();
 
-    const minutesUntilStart = differenceInMinutes(newDate, new Date());
+    if (this.props.status === 'CANCELED')
+      throw new AppointmentAlreadyCanceledError();
+
+    if (this.props.status === 'EXPIRED')
+      throw new AppointmentAlreadyExpiredError();
+
+    if (this.props.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
+
+    const now = new Date();
+
+    if (isPast(date)) throw new PastDateError();
+
+    const minutesUntilStart = differenceInMinutes(date, now);
 
     if (minutesUntilStart < 10)
       throw new Error(
         'Cannot reschedule appointment less than 10 minutes before the start time.',
       );
 
-    this.props.startAt = newDate;
-    this.props.endAt = addMinutes(newDate, this.props.duration!);
+    this.props.startAt = date;
+    this.props.endAt = addMinutes(date, this.props.duration!);
     this.touch();
+
+    this.events.push('appointment.rescheduled');
+  }
+
+  public pullEvents(): string[] {
+    const events = [...this.events];
+    this.events = [];
+    return events;
   }
 
   public getTime() {

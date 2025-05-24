@@ -48,12 +48,12 @@ describe('InMemory Appointment Repository', () => {
 
   it('should update an existing appointment', async () => {
     await appointmentRepo.create(appointment);
-    appointment.cancel();
+    appointment.schedule();
 
     await expect(appointmentRepo.update(appointment)).resolves.toBeUndefined();
     const updatedAppointment = await appointmentRepo.findById(appointment.id);
 
-    expect(updatedAppointment!.status).toBe('CANCELED');
+    expect(updatedAppointment!.status).toBe('SCHEDULED');
   });
 
   it('should find an appointment by id', async () => {
@@ -106,8 +106,10 @@ describe('InMemory Appointment Repository', () => {
       }),
     ];
 
-    appointments[0].discard();
-    appointments[1].discard();
+    appointments[0].schedule();
+    appointments[0].expire();
+    appointments[1].schedule();
+    appointments[1].expire();
 
     await appointmentRepo.createMany(appointments);
     await expect(

@@ -31,6 +31,11 @@ describe('Appointment Entity', () => {
     expect(appointment.startAt).toEqual(addMinutes(now, 10));
   });
 
+  it('should move forward to SCHEDULED status after processing', () => {
+    appointment.schedule();
+    expect(appointment.status).toBe('SCHEDULED');
+  });
+
   it('should reject invalid duration (not divisible by 30)', () => {
     expect(() => {
       Appointment.create({
@@ -50,12 +55,14 @@ describe('Appointment Entity', () => {
   });
 
   it('should allow cancellation if more than 10 minutes before start', () => {
-    expect(
-      Appointment.create({
-        ...appointment.toJSON(),
-        startAt: addMinutes(now, 11),
-      }).cancel(),
-    );
+    const _appointment = Appointment.create({
+      ...appointment.toJSON(),
+      startAt: addMinutes(now, 11),
+    });
+
+    _appointment.schedule();
+
+    expect(_appointment.cancel());
   });
 
   it('should prevent cancellation if less than 10 minutes before start', () => {
@@ -67,16 +74,30 @@ describe('Appointment Entity', () => {
     }).toThrow();
   });
 
+  it('should pull events from the appointment', () => {
+    appointment.schedule();
+    appointment.finish();
+    expect(appointment.pullEvents()).toEqual([
+      'appointment.scheduled',
+      'appointment.finished',
+    ]);
+  });
+
   it('should finish appointment and mark as FINISHED', () => {
+    appointment.schedule();
     appointment.finish();
     expect(appointment.status).toBe('FINISHED');
   });
 
   it('should reschedule appointment if start date is valid and more than 10 minutes ahead', () => {
+    appointment.schedule();
+
     appointment.reschedule(addMinutes(now, 11));
   });
 
   it('should prevent rescheduling if start date is less than 10 minutes ahead', () => {
+    appointment.schedule();
+
     expect(() => {
       appointment.reschedule(addMinutes(now, 9));
     }).toThrow();

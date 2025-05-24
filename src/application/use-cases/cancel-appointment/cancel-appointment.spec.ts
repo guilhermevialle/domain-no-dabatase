@@ -28,6 +28,7 @@ describe('CancelAppointment Use Case', () => {
   });
 
   it('should throw an error if the appointment is already finished', async () => {
+    appointment.schedule();
     appointment.finish();
 
     await expect(() =>
@@ -36,6 +37,7 @@ describe('CancelAppointment Use Case', () => {
   });
 
   it('should throw an error if the appointment is already canceled', async () => {
+    appointment.schedule();
     appointment.cancel();
 
     await expect(() =>
@@ -44,7 +46,8 @@ describe('CancelAppointment Use Case', () => {
   });
 
   it('should throw an error if the appointment is already expired', async () => {
-    appointment.discard();
+    appointment.schedule();
+    appointment.expire();
 
     await expect(() =>
       useCase.execute({ id: appointment.id }),
@@ -52,6 +55,7 @@ describe('CancelAppointment Use Case', () => {
   });
 
   it('should cancel the appointment and update the repository if valid', async () => {
+    appointment.schedule();
     await dependecies.appointmentRepo.create(appointment);
 
     await expect(

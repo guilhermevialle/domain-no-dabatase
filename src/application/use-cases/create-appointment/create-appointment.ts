@@ -59,7 +59,7 @@ export class CreateAppointment {
 
     if (!isBarberAvailable) throw new Error('Barber is not available.');
 
-    appointment.next();
+    appointment.schedule();
 
     await this.appointmentRepo.create(appointment);
 

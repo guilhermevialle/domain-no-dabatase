@@ -1,4 +1,9 @@
 import { Appointment } from '../../../domain/entities/appointment';
+import {
+  AppointmentAlreadyCanceledError,
+  AppointmentAlreadyExpiredError,
+  AppointmentAlreadyFinishedError,
+} from '../../../domain/errors/appointment-errors';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 
 interface CancelAppointmentRequest {
@@ -17,14 +22,14 @@ export class CancelAppointment {
 
     if (!appointment) throw new Error('Appointment not found.');
 
-    if (appointment.status == 'FINISHED')
-      throw new Error('Appointment already finished.');
+    if (appointment.status === 'FINISHED')
+      throw new AppointmentAlreadyFinishedError();
 
     if (appointment.status === 'CANCELED')
-      throw new Error('Appointment already canceled.');
+      throw new AppointmentAlreadyCanceledError();
 
     if (appointment.status === 'EXPIRED')
-      throw new Error('Appointment already expired.');
+      throw new AppointmentAlreadyExpiredError();
 
     appointment.cancel();
 

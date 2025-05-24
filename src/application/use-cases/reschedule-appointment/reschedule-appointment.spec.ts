@@ -41,14 +41,16 @@ describe('RescheduleAppointment Use Case', () => {
   });
 
   it('Should reschedule the appointment to the new time if the barber is available', async () => {
-    await dependencies.appointmentRepo.create(
-      buildAppointment({
-        id: 'a-1',
-        barberId: 'b-1',
-        customerId: 'c-1',
-        startAt: addMinutes(now, 10),
-      }),
-    );
+    const appointment = buildAppointment({
+      id: 'a-1',
+      barberId: 'b-1',
+      customerId: 'c-1',
+      startAt: addMinutes(now, 10),
+    });
+
+    appointment.schedule();
+
+    await dependencies.appointmentRepo.create(appointment);
 
     const { availableDays, timeSlots } = buildAvailability('b-1');
 
