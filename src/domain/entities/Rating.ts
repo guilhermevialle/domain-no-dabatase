@@ -1,4 +1,5 @@
 import { randomId } from '../../utils/random-id';
+import { CommentSizeError, RatingValueError } from '../errors/rating-errors';
 
 type OptionalRatingProps = Partial<{
   id: string;
@@ -29,14 +30,8 @@ export class Rating {
   }
 
   private validate(props: RatingProps) {
-    if (props.comment.length > 255)
-      throw new Error('Comment must be under 255 characters.');
-
-    if (props.rating < 1 || props.rating > 5)
-      throw new Error('Rating must be between 1 and 5.');
-
-    if (props.comment!.length > 255)
-      throw new Error('Comment must be under 255 characters.');
+    if (props.comment.length > 255) throw new CommentSizeError();
+    if (props.rating < 1 || props.rating > 5) throw new RatingValueError();
   }
 
   static create(props: RequiredRatingProps) {

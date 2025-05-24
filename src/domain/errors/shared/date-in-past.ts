@@ -6,4 +6,14 @@ export class PastDateError extends DomainError {
   }
 }
 
-new PastDateError();
+export class FutureDateError extends DomainError {
+  constructor(message?: string) {
+    super(message ?? 'Date must be in the past.');
+  }
+}
+
+export class SameDateError extends DomainError {
+  constructor(message?: string) {
+    super(message ?? 'Date must be different from the another one.');
+  }
+}

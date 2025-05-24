@@ -1,4 +1,5 @@
 import { randomId } from '../../utils/random-id';
+import { FutureDateError, SameDateError } from '../errors/shared/date-in-past';
 import { Time } from '../value-objects/time';
 
 type OptionalTimeSlotProps = Partial<{
@@ -26,13 +27,11 @@ export class TimeSlot {
   }
 
   private validate(props: TimeSlotProps) {
-    if (props.start.value === props.end.value) {
-      throw new Error('Start and end times cannot be the same.');
-    }
+    if (props.start.value === props.end.value)
+      throw new SameDateError('Start and end times cannot be the same.');
 
-    if (props.start.toMinutes() >= props.end.toMinutes()) {
-      throw new Error('Start time must be before end time.');
-    }
+    if (props.start.toMinutes() >= props.end.toMinutes())
+      throw new FutureDateError('Start time must be before end time.');
   }
 
   static create(props: RequiredTimeSlotProps) {

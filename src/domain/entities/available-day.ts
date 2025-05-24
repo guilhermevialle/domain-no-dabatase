@@ -1,4 +1,5 @@
 import { randomId } from '../../utils/random-id';
+import { InvalidWeekdayError } from '../errors/available-day-errors';
 
 type OptionalAvailableDayProps = Partial<{
   id: string;
@@ -14,12 +15,17 @@ export class AvailableDay {
   private props: AvailableDayProps;
 
   private constructor(props: AvailableDayProps) {
-    this.props = props;
+    this.props = {
+      ...props,
+      id: props.id || randomId(),
+    };
 
-    if (!this.props.id) this.props.id = randomId();
+    this.validate(this.props);
+  }
 
-    if (this.props.weekday < 0 || this.props.weekday > 6) {
-      throw new Error('Weekday must be between 0 (Sunday) and 6 (Saturday).');
+  private validate(props: AvailableDayProps) {
+    if (props.weekday < 0 || props.weekday > 6) {
+      throw new InvalidWeekdayError();
     }
   }
 

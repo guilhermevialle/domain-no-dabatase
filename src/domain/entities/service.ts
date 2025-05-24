@@ -1,5 +1,9 @@
 import { AvailableService } from '../../@types/service';
 import { randomId } from '../../utils/random-id';
+import {
+  InvalidDurationError,
+  InvalidPriceError,
+} from '../errors/service-errors';
 
 type OptionalServiceProps = Partial<{
   id: string;
@@ -26,12 +30,16 @@ export class Service {
   }
 
   private validate(props: ServiceProps) {
-    if (props.priceInCents < 100) throw new Error('Invalid price.');
+    if (props.priceInCents < 100)
+      throw new InvalidPriceError('Price must be at least 100 cents.');
 
-    if (props.duration <= 0) throw new Error('Invalid duration.');
+    if (props.duration <= 0)
+      throw new InvalidDurationError('Duration must be greater than 0.');
 
     if (props.duration % 30 !== 0) {
-      throw new Error('Duration must be a multiple of 30 minutes.');
+      throw new InvalidDurationError(
+        'Duration must be a multiple of 30 minutes.',
+      );
     }
   }
 

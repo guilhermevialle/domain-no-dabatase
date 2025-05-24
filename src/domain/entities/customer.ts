@@ -5,6 +5,7 @@ import { Email } from '../value-objects/email';
 type OptionalCustomerProps = Partial<{
   id: string;
 }>;
+
 interface RequiredCustomerProps {
   fullName: string;
   email: Email;
@@ -16,10 +17,15 @@ export class Customer {
   private props: CustomerProps;
 
   private constructor(props: CustomerProps) {
-    this.props = props;
+    this.props = {
+      ...props,
+      id: props.id || randomId(),
+    };
 
-    if (!this.props.id) this.props.id = randomId();
+    this.validate(this.props);
   }
+
+  private validate(props: CustomerProps) {}
 
   static create(props: RequiredCustomerProps) {
     return new Customer(props);
