@@ -110,7 +110,7 @@ describe('Appointment Entity', () => {
   });
 
   it('should return correct weekday using getDay()', () => {
-    expect(appointment.getDay()).toBe(now.getDay());
+    expect(appointment.getDay()).toBe(addMinutes(now, 10).getDay());
   });
 
   it('should return a Time object using getTime()', () => {

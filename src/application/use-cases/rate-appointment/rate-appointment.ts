@@ -1,10 +1,13 @@
 import { Rating, RequiredRatingProps } from '../../../domain/entities/rating';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
+import {
+  AppointmentAlreadyRatedError,
+  AppointmentMismatchError,
+  AppointmentNotFoundError,
+} from '../../errors/shared';
 
-type RateAppointmentRequest = RequiredRatingProps & {
-  comment?: string;
-};
+type RateAppointmentRequest = RequiredRatingProps;
 
 type RateAppointmentResponse = Rating;
 
@@ -22,15 +25,19 @@ export class RateAppointment {
     rating,
   }: RateAppointmentRequest): Promise<RateAppointmentResponse> {
     const appointment = await this.appointmentRepo.findById(appointmentId);
-    if (!appointment) throw new Error('Appointment not found.');
 
-    if (appointment.barberId !== barberId) throw new Error('Barber mismatch.');
+    if (!appointment) throw new AppointmentNotFoundError();
+
+    if (appointment.barberId !== barberId)
+      throw new AppointmentMismatchError('Barber mismatch with appointment.');
+
     if (appointment.customerId !== customerId)
-      throw new Error('Customer mismatch.');
+      throw new AppointmentMismatchError('Customer mismatch with appointment.');
 
-    const existingRating =
+    const foundRating =
       await this.ratingRepo.findByAppointmentId(appointmentId);
-    if (existingRating) throw new Error('Appointment already rated.');
+
+    if (foundRating) throw new AppointmentAlreadyRatedError();
 
     const _rating = Rating.create({
       appointmentId,

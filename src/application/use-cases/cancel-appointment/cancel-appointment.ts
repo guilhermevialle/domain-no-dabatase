@@ -1,10 +1,6 @@
 import { Appointment } from '../../../domain/entities/appointment';
-import {
-  AppointmentAlreadyCanceledError,
-  AppointmentAlreadyExpiredError,
-  AppointmentAlreadyFinishedError,
-} from '../../../domain/errors/appointment-errors';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
+import { AppointmentNotFoundError } from '../../errors/shared';
 
 interface CancelAppointmentRequest {
   id: string;
@@ -20,20 +16,12 @@ export class CancelAppointment {
   }: CancelAppointmentRequest): Promise<CancelAppointmentResponse> {
     const appointment = await this.appointmentRepo.findById(id);
 
-    if (!appointment) throw new Error('Appointment not found.');
-
-    if (appointment.status === 'FINISHED')
-      throw new AppointmentAlreadyFinishedError();
-
-    if (appointment.status === 'CANCELED')
-      throw new AppointmentAlreadyCanceledError();
-
-    if (appointment.status === 'EXPIRED')
-      throw new AppointmentAlreadyExpiredError();
+    if (!appointment) throw new AppointmentNotFoundError();
 
     appointment.cancel();
 
     await this.appointmentRepo.update(appointment);
+
     return appointment;
   }
 }

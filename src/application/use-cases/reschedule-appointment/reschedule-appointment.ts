@@ -1,6 +1,10 @@
 import { Appointment } from '../../../domain/entities/appointment';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 import { IAvailabilityService } from '../../../interfaces/services/availability-service';
+import {
+  AppointmentNotFoundError,
+  BarberNotAvailableError,
+} from '../../errors/shared';
 
 interface RescheduleAppointmentRequest {
   id: string;
@@ -21,15 +25,15 @@ export class RescheduleAppointment {
   }: RescheduleAppointmentRequest): Promise<RescheduleAppointmentResponse> {
     const appointment = await this.appointmentRepo.findById(id);
 
-    if (!appointment) throw new Error('Appointment not found.');
+    if (!appointment) throw new AppointmentNotFoundError();
 
-    const isAvailable = await this.availability.isBarberAvailable(
+    const isBarberAvailable = await this.availability.isBarberAvailable(
       appointment.barberId,
       startAt,
       id,
     );
 
-    if (!isAvailable) throw new Error('Barber is not available at this time.');
+    if (!isBarberAvailable) throw new BarberNotAvailableError();
 
     appointment.reschedule(startAt);
 

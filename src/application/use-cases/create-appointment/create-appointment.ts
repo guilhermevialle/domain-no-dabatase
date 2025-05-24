@@ -8,6 +8,12 @@ import { IAppointmentRepository } from '../../../interfaces/repositories/appoint
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
 import { IAvailabilityService } from '../../../interfaces/services/availability-service';
+import {
+  BarberDoesNotProvideServiceError,
+  BarberNotAvailableError,
+  BarberNotFoundError,
+  CustomerNotFoundError,
+} from '../../errors/shared';
 
 interface CreateAppointmentRequest {
   customerId: string;
@@ -35,10 +41,13 @@ export class CreateAppointment {
     const customer = await this.customerRepo.findById(customerId);
     const barber = await this.barberRepo.findById(barberId);
 
-    if (!customer) throw new Error('Customer not found.');
-    if (!barber) throw new Error('Barber not found.');
+    if (!customer) throw new CustomerNotFoundError();
+    if (!barber) throw new BarberNotFoundError();
+
     if (!barber.offersService(service))
-      throw new Error(`Barber does not provide the service ${service}.`);
+      throw new BarberDoesNotProvideServiceError(
+        `Barber does not provide the service: ${service}.`,
+      );
 
     const duration = BASE_DURATIONS_IN_MINUTES[service];
     const priceInCents = BASE_PRICES_IN_CENTS[service];
@@ -57,7 +66,7 @@ export class CreateAppointment {
       startAt,
     );
 
-    if (!isBarberAvailable) throw new Error('Barber is not available.');
+    if (!isBarberAvailable) throw new BarberNotAvailableError();
 
     appointment.schedule();
 

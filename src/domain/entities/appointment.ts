@@ -9,7 +9,7 @@ import {
   AppointmentAlreadyScheduledError,
   AppointmentNotScheduledError,
 } from '../errors/appointment-errors';
-import { PastDateError } from '../errors/shared/date-in-past';
+import { PastDateError } from '../errors/shared';
 import { Time } from '../value-objects/time';
 
 type OptionalAppointmentProps = Partial<{
