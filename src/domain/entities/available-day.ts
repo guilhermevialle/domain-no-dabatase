@@ -4,6 +4,7 @@ import { InvalidWeekdayError } from '../errors/available-day-errors';
 type OptionalAvailableDayProps = Partial<{
   id: string;
 }>;
+
 interface RequiredAvailableDayProps {
   barberId: string;
   weekday: number;

@@ -1,20 +1,20 @@
-import { Appointment } from './domain/entities/appointment';
+import { Barber } from './domain/aggregates/barber';
+import { buildAvailability } from './test/builders/build-barber-availability';
 
-const now = new Date();
+const log = (...args: any) => console.log(...args);
 
-const appointment = Appointment.create({
-  barberId: 'barber-id',
-  customerId: 'customer-id',
-  service: 'Modern Haircut',
-  startAt: now,
-  priceInCents: 3000,
-  duration: 30,
-});
+try {
+  const { availableDays, timeSlots } = buildAvailability('barber-1');
 
-const restored = Appointment.restore(appointment.toJSON());
-
-function getId(id: string) {
-  console.log(id);
+  const barber = Barber.restore({
+    id: 'barber-1',
+    fullName: 'John Doe',
+    services: ['Beard Trim', 'Modern Haircut'],
+    availableDays,
+    timeSlots,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+} catch (err: any) {
+  console.error(err.message);
 }
-
-getId(appointment.id);
