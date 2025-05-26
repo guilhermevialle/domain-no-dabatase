@@ -1,4 +1,4 @@
-import { isAfter, isBefore, isValid, parse } from 'date-fns';
+import { addMinutes, isAfter, isBefore, isValid, parse } from 'date-fns';
 
 export class Time {
   private _value: string;
@@ -35,14 +35,20 @@ export class Time {
     return new Time(value);
   }
 
-  isBefore(other: Time): boolean {
+  public addMinutes(minutes: number): Time {
+    const date = this.toDate();
+
+    return new Time(addMinutes(date, minutes));
+  }
+
+  public isBefore(other: Time): boolean {
     return isBefore(
       parse(this._value, 'HH:mm', new Date()),
       parse(other.value, 'HH:mm', new Date()),
     );
   }
 
-  isAfter(other: Time): boolean {
+  public isAfter(other: Time): boolean {
     return isAfter(
       parse(this._value, 'HH:mm', new Date()),
       parse(other.value, 'HH:mm', new Date()),

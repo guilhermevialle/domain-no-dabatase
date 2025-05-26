@@ -6,14 +6,12 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository';
-import { IAvailableDayRepository } from '../../interfaces/repositories/available-day-repository';
-import { ITimeSlotRepository } from '../../interfaces/repositories/time-slot-repository';
+import { IBarberRepository } from '../../interfaces/repositories/barber-repository';
 import { IAvailabilityService } from '../../interfaces/services/availability-service';
 
 export class AvailabilityService implements IAvailabilityService {
   constructor(
-    private readonly availableDayRepo: IAvailableDayRepository,
-    private readonly timeSlotRepo: ITimeSlotRepository,
+    private readonly barberRepo: IBarberRepository,
     private readonly appointmentRepo: IAppointmentRepository,
   ) {}
 

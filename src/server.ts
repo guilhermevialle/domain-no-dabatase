@@ -1,20 +1,16 @@
 import { Barber } from './domain/aggregates/barber';
-import { buildAvailability } from './test/builders/build-barber-availability';
-
-const log = (...args: any) => console.log(...args);
+import { buildAvailability } from './test/builders/build-availability';
 
 try {
-  const { availableDays, timeSlots } = buildAvailability('barber-1');
+  const { workDays } = buildAvailability('barber-1');
 
-  const barber = Barber.restore({
-    id: 'barber-1',
+  const barber = Barber.create({
     fullName: 'John Doe',
-    services: ['Beard Trim', 'Modern Haircut'],
-    availableDays,
-    timeSlots,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    services: ['Beard Trim', 'Clean Shave'],
+    workDays,
   });
-} catch (err: any) {
-  console.error(err.message);
+
+  console.log(JSON.stringify(barber, null, 2));
+} catch (error: any) {
+  console.log(error.message);
 }

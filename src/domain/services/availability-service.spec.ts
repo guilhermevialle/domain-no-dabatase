@@ -6,7 +6,7 @@ import {
   availableDayRepo,
   timeSlotRepo,
 } from '../../config/depencies';
-import { buildAvailability } from '../../test/builders/build-barber-availability';
+import { buildAvailability } from '../../test/builders/build-availability';
 import {
   buildAppointment,
   buildBarber,
@@ -49,11 +49,14 @@ describe('Availability Service', () => {
   });
 
   it('Should return true if the given time is inside a defined time slot and no other appointment overlaps that time', async () => {
-    const { availableDays, timeSlots } = await buildAvailability(barber.id!, {
-      startDay: 0,
-      endDay: 6,
-      slots: [{ startTime: '00:00', endTime: '23:59' }],
-    });
+    const { availableDays, shifts: timeSlots } = await buildAvailability(
+      barber.id!,
+      {
+        startDay: 0,
+        endDay: 6,
+        intervals: [{ start: '00:00', end: '23:59' }],
+      },
+    );
 
     await availableDayRepo.createMany(availableDays);
     await timeSlotRepo.createMany(timeSlots);
@@ -67,10 +70,10 @@ describe('Availability Service', () => {
   });
 
   it('Should return false if the given time is outside all defined time slots for the day, even if no appointment exists', async () => {
-    const { availableDays, timeSlots } = buildAvailability('barber-2', {
+    const { availableDays, shifts: timeSlots } = buildAvailability('barber-2', {
       startDay: 0,
       endDay: 6,
-      slots: [{ startTime: '08:00', endTime: '12:00' }],
+      intervals: [{ start: '08:00', end: '12:00' }],
     });
 
     await availableDayRepo.createMany(availableDays);
@@ -96,10 +99,10 @@ describe('Availability Service', () => {
       }),
     );
 
-    const { availableDays, timeSlots } = buildAvailability('barber-2', {
+    const { availableDays, shifts: timeSlots } = buildAvailability('barber-2', {
       startDay: 0,
       endDay: 6,
-      slots: [{ startTime: '00:00', endTime: '23:59' }],
+      intervals: [{ start: '00:00', end: '23:59' }],
     });
 
     await availableDayRepo.createMany(availableDays);

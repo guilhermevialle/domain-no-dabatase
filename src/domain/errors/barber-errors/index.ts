@@ -8,13 +8,13 @@ export class DuplicateServiceError extends BarberError {
   }
 }
 
-export class DuplicateAvailableDayError extends BarberError {
+export class DuplicateWorkDayError extends BarberError {
   constructor(message?: string) {
-    super(message ?? 'Cannot have duplicate available day.');
+    super(message ?? 'Cannot have duplicate work day.');
   }
 }
 
-export class DuplicateTimeSlotError extends BarberError {
+export class DuplicateShiftError extends BarberError {
   constructor(message?: string) {
     super(message ?? 'Cannot have duplicate time slot.');
   }
@@ -26,9 +26,9 @@ export class EmptyServicesError extends BarberError {
   }
 }
 
-export class MissingAvailableDayError extends BarberError {
+export class MissingWorkDayError extends BarberError {
   constructor(message?: string) {
-    super(message ?? 'Must have at least one available day.');
+    super(message ?? 'Must have at least one work day.');
   }
 }
 

@@ -1,16 +1,14 @@
 import { AvailableService } from '../../@types/service';
-import { buildAvailability } from '../../test/builders/build-barber-availability';
 import { randomId } from '../../utils/random-id';
-import { AvailableDay } from '../entities/available-day';
-import { TimeSlot } from '../entities/time-slot';
+import { Shift } from '../entities/shift';
+import { WorkDay } from '../entities/work-day';
 import {
-  DuplicateAvailableDayError,
   DuplicateServiceError,
-  DuplicateTimeSlotError,
+  DuplicateWorkDayError,
   EmptyServicesError,
-  MissingAvailableDayError,
-  MissingTimeSlotError,
+  MissingWorkDayError,
 } from '../errors/barber-errors';
+import { Time } from '../value-objects/time';
 
 type OptionalBarberProps = Partial<{
   id: string;
@@ -21,8 +19,7 @@ type OptionalBarberProps = Partial<{
 interface RequiredBarberProps {
   fullName: string;
   services: AvailableService[];
-  availableDays: AvailableDay[];
-  timeSlots: TimeSlot[];
+  workDays: WorkDay[];
 }
 
 type BarberProps = RequiredBarberProps & OptionalBarberProps;
@@ -30,8 +27,7 @@ type BarberProps = RequiredBarberProps & OptionalBarberProps;
 export class Barber {
   private props: BarberProps;
   private servicesSet: Set<AvailableService>;
-  private availableDaysSet: Set<AvailableDay>;
-  private timeSlotsSet: Set<TimeSlot>;
+  private workDaysSet: Set<WorkDay>;
   private events: string[] = [];
 
   private constructor(props: BarberProps) {
@@ -43,8 +39,7 @@ export class Barber {
     };
 
     this.servicesSet = new Set(this.props.services);
-    this.availableDaysSet = new Set(this.props.availableDays);
-    this.timeSlotsSet = new Set(this.props.timeSlots);
+    this.workDaysSet = new Set(this.props.workDays);
 
     this.validate();
   }
@@ -54,13 +49,9 @@ export class Barber {
     if (this.servicesSet.size !== this.props.services.length)
       throw new DuplicateServiceError();
 
-    if (this.availableDaysSet.size < 1) throw new MissingAvailableDayError();
-    if (this.availableDaysSet.size !== this.props.availableDays.length)
-      throw new DuplicateAvailableDayError();
-
-    if (this.timeSlotsSet.size < 1) throw new MissingTimeSlotError();
-    if (this.timeSlotsSet.size !== this.props.timeSlots.length)
-      throw new DuplicateTimeSlotError();
+    if (this.workDaysSet.size < 1) throw new MissingWorkDayError();
+    if (this.workDaysSet.size !== this.props.workDays.length)
+      throw new DuplicateWorkDayError();
   }
 
   static create(props: RequiredBarberProps) {
@@ -84,31 +75,20 @@ export class Barber {
     this.events.push('barber.service.added');
   }
 
-  public addTimeSlot(timeSlot: TimeSlot) {
-    if (this.timeSlotsSet.has(timeSlot)) throw new DuplicateTimeSlotError();
+  public addWorkDay(workDay: WorkDay) {
+    if (this.workDaysSet.has(workDay)) throw new DuplicateWorkDayError();
 
-    this.timeSlotsSet.add(timeSlot);
+    this.workDaysSet.add(workDay);
     this.touch();
 
-    this.events.push('barber.timeSlot.added');
-  }
-
-  public addAvailableDay(availableDay: AvailableDay) {
-    if (this.availableDaysSet.has(availableDay))
-      throw new DuplicateAvailableDayError();
-
-    this.availableDaysSet.add(availableDay);
-    this.touch();
-
-    this.events.push('barber.availableDay.added');
+    this.events.push('barber.workDay.added');
   }
 
   public toJSON() {
     return {
       ...this.props,
       services: [...this.servicesSet],
-      availableDays: [...this.availableDaysSet],
-      timeSlots: [...this.timeSlotsSet],
+      workDays: [...this.workDaysSet],
     } as Required<BarberProps>;
   }
 
@@ -135,12 +115,8 @@ export class Barber {
     return [...this.servicesSet];
   }
 
-  get availableDays() {
-    return [...this.availableDaysSet];
-  }
-
-  get timeSlots() {
-    return [...this.timeSlotsSet];
+  get workDays() {
+    return [...this.workDaysSet];
   }
 
   get createdAt() {
@@ -152,13 +128,20 @@ export class Barber {
   }
 }
 
-const { availableDays, timeSlots } = buildAvailability('barber-1');
-const barber = Barber.restore({
-  id: 'barber-1',
+Barber.create({
   fullName: 'John Doe',
-  services: ['Beard Trim', 'Modern Haircut'],
-  availableDays,
-  timeSlots,
-  createdAt: new Date(),
-  updatedAt: new Date(),
+  services: ['Beard Trim'],
+  workDays: [
+    WorkDay.create({
+      weekday: 1,
+      barberId: 'barber-1',
+      shifts: [
+        Shift.create({
+          end: Time.create('17:00'),
+          start: Time.create('08:00'),
+          workDayId: 'work-day-1',
+        }),
+      ],
+    }),
+  ],
 });

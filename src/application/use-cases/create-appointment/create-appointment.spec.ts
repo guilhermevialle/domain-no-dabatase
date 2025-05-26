@@ -8,7 +8,7 @@ import {
   buildCustomer,
 } from '../../../test/builders/build-entities';
 
-import { buildAvailability } from '../../../test/builders/build-barber-availability';
+import { buildAvailability } from '../../../test/builders/build-availability';
 import {
   buildDependencies,
   IBuildDependecies,
@@ -75,7 +75,7 @@ describe('CreateAppointment Use Case', () => {
     await dependecies.customerRepo.create(customer);
     await dependecies.barberRepo.create(barber);
 
-    const { availableDays, timeSlots } = buildAvailability(barber.id!);
+    const { workDays } = buildAvailability(barber.id!);
 
     await dependecies.availableDayRepo.createMany(availableDays);
     await dependecies.timeSlotRepo.createMany(timeSlots);

@@ -1,6 +1,6 @@
 import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildAvailability } from '../../../test/builders/build-barber-availability';
+import { buildAvailability } from '../../../test/builders/build-availability';
 import {
   buildDependencies,
   IBuildDependecies,
@@ -52,7 +52,7 @@ describe('RescheduleAppointment Use Case', () => {
 
     await dependencies.appointmentRepo.create(appointment);
 
-    const { availableDays, timeSlots } = buildAvailability('b-1');
+    const { availableDays, shifts: timeSlots } = buildAvailability('b-1');
 
     await dependencies.availableDayRepo.createMany(availableDays);
     await dependencies.timeSlotRepo.createMany(timeSlots);

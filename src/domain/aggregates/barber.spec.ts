@@ -1,25 +1,43 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildAvailability } from '../../test/builders/build-barber-availability';
+import { buildAvailability } from '../../test/builders/build-availability';
+import { Shift } from '../entities/shift';
+import { WorkDay } from '../entities/work-day';
+import { Time } from '../value-objects/time';
 import { Barber } from './barber';
 
 describe('Barber Aggregate Root', () => {
   let barber: Barber;
 
   beforeEach(() => {
-    const { availableDays, timeSlots } = buildAvailability('barber-1');
+    const { workDays } = buildAvailability('barber-1');
 
     barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
       services: ['Beard Trim', 'Modern Haircut'],
-      availableDays,
-      timeSlots,
+      workDays,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
   });
 
-  it('should ensure services is not empty', () => {
+  it('should create a Barber with valid props using .create', () => {
+    expect(
+      Barber.create({
+        ...barber.toJSON(),
+      }),
+    ).toBeInstanceOf(Barber);
+  });
+
+  it('should restore a Barber with valid props using .restore', () => {
+    expect(
+      Barber.restore({
+        ...barber.toJSON(),
+      }),
+    ).toBeInstanceOf(Barber);
+  });
+
+  it('should throw EmptyServicesError if services list is empty', () => {
     expect(() => {
       Barber.restore({
         ...barber.toJSON(),
@@ -28,7 +46,7 @@ describe('Barber Aggregate Root', () => {
     }).toThrow();
   });
 
-  it('should ensure services does not contain duplicates', () => {
+  it('should throw DuplicateServiceError if services list has duplicates', () => {
     expect(() => {
       Barber.restore({
         ...barber.toJSON(),
@@ -37,43 +55,54 @@ describe('Barber Aggregate Root', () => {
     }).toThrow();
   });
 
-  it('should ensure at least one availableDay exists', () => {
+  it('should throw MissingWorkDayError if workDays list is empty', () => {
     expect(() => {
       Barber.restore({
         ...barber.toJSON(),
-        availableDays: [],
+        workDays: [],
       });
     }).toThrow();
   });
 
-  it('should ensure at least one timeSlot exists', () => {
+  it('should throw DuplicateWorkDayError if workDays list has duplicates (by reference)', () => {
     expect(() => {
       Barber.restore({
         ...barber.toJSON(),
-        timeSlots: [],
+        workDays: [barber.workDays[0], barber.workDays[0]],
       });
     }).toThrow();
   });
 
-  it('should not allow more than one availableDay with the same weekday', () => {
+  it('should confirm service availability using offersService', () => {
+    expect(barber.offersService('Beard Trim')).toBe(true);
+    expect(barber.offersService('Kids Haircut')).toBe(false);
+  });
+
+  it('should add a new service and emit event', () => {
+    barber.addService('Kids Haircut');
+    expect(barber.pullEvents()).toEqual(['barber.service.added']);
+  });
+
+  it('should throw DuplicateServiceError when adding a duplicate service', () => {
     expect(() => {
-      Barber.restore({
-        ...barber.toJSON(),
-        availableDays: [...barber.availableDays, barber.availableDays[0]],
-      });
+      barber.addService('Beard Trim');
     }).toThrow();
   });
 
-  it('should not allow more than one timeSlot with the same availableDayId', () => {
-    expect(() => {
-      Barber.restore({
-        ...barber.toJSON(),
-        timeSlots: [...barber.timeSlots, barber.timeSlots[0]],
-      });
-    }).toThrow();
-  });
-
-  it('should keep availableDays and timeSlots consistent (no orphaned slots)', () => {
-    expect(barber.availableDays.length).toBe(barber.timeSlots.length);
+  it('should add a new workDay and emit event', () => {
+    barber.addWorkDay(
+      WorkDay.create({
+        barberId: 'barber-1',
+        weekday: 1,
+        shifts: [
+          Shift.create({
+            workDayId: 'work-day-1',
+            start: Time.create('08:00'),
+            end: Time.create('17:00'),
+          }),
+        ],
+      }),
+    );
+    expect(barber.pullEvents()).toEqual(['barber.workDay.added']);
   });
 });
