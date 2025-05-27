@@ -17,3 +17,9 @@ export class SameDateError extends DomainError {
     super(message ?? 'Date must be different from the another one.');
   }
 }
+
+export class MissingDateError extends DomainError {
+  constructor(message?: string) {
+    super(message ?? 'Date is required.');
+  }
+}

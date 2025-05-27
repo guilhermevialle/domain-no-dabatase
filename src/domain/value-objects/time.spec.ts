@@ -8,7 +8,7 @@ describe('Time Value Object', () => {
   });
 
   it('should create a Time from a valid Date instance', () => {
-    const date = new Date('2023-01-01T12:00:00Z');
+    const date = new Date(2023, 0, 1, 12, 0);
     const time = Time.create(date);
     expect(time.value).toBe('12:00');
   });

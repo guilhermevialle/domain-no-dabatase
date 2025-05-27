@@ -4,9 +4,10 @@ export interface IAvailabilityService {
     startAt: Date,
     ignoreAppointmentId?: string,
   ): Promise<boolean>;
-  findBusyTimesByBarberInRange: (
+  isWithinBarberShift(barberId: string, startAt: Date): Promise<boolean>;
+  isOverlappingByDateAndBarberId: (
     barberId: string,
     startAt: Date,
-    endAt: Date,
-  ) => Promise<Record<string, string[]>>;
+    ignoreAppointmentId?: string,
+  ) => Promise<boolean>;
 }

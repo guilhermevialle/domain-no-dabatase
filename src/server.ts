@@ -1,16 +1,17 @@
-import { Barber } from './domain/aggregates/barber';
-import { buildAvailability } from './test/builders/build-availability';
+import { isWithinInterval } from 'date-fns';
+import { Time } from './domain/value-objects/time';
 
-try {
-  const { workDays } = buildAvailability('barber-1');
+const start = Time.create('08:00');
+const end = Time.create('12:30');
+const now = new Date();
 
-  const barber = Barber.create({
-    fullName: 'John Doe',
-    services: ['Beard Trim', 'Clean Shave'],
-    workDays,
-  });
+now.setTime(now.getTime() + 2 * 60 * 60 * 1000);
 
-  console.log(JSON.stringify(barber, null, 2));
-} catch (error: any) {
-  console.log(error.message);
-}
+console.log(start.toDate(now), end.toDate(now), Time.create(now).toDate(now));
+
+const withinInterval = isWithinInterval(now, {
+  start: start.toDate(now),
+  end: end.toDate(now),
+});
+
+console.log(withinInterval);

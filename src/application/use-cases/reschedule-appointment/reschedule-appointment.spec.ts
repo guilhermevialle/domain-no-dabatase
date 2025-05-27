@@ -1,11 +1,14 @@
 import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildAvailability } from '../../../test/builders/build-availability';
 import {
   buildDependencies,
   IBuildDependecies,
 } from '../../../test/builders/build-dependencies';
-import { buildAppointment } from '../../../test/builders/build-entities';
+import {
+  buildAppointment,
+  buildBarber,
+} from '../../../test/builders/build-entities';
+import { BarberNotAvailableError } from '../../errors/shared';
 import { RescheduleAppointment } from './reschedule-appointment';
 
 describe('RescheduleAppointment Use Case', () => {
@@ -50,12 +53,18 @@ describe('RescheduleAppointment Use Case', () => {
 
     appointment.schedule();
 
+    await dependencies.barberRepo.create(buildBarber('b-1'));
+
     await dependencies.appointmentRepo.create(appointment);
 
-    const { availableDays, shifts: timeSlots } = buildAvailability('b-1');
+    const isBarberAvailable =
+      await dependencies.availabilityService.isBarberAvailable(
+        'b-1',
+        addMinutes(now, 20),
+        appointment.id,
+      );
 
-    await dependencies.availableDayRepo.createMany(availableDays);
-    await dependencies.timeSlotRepo.createMany(timeSlots);
+    if (!isBarberAvailable) throw new BarberNotAvailableError();
 
     const result = await useCase.execute({
       id: 'a-1',

@@ -1,4 +1,5 @@
 import { addMinutes, isAfter, isBefore, isValid, parse } from 'date-fns';
+import { MissingDateError } from '../errors/shared';
 
 export class Time {
   private _value: string;
@@ -10,8 +11,8 @@ export class Time {
   private validateAndNormalize(value: string | Date): string {
     let timeString: string;
     if (value instanceof Date) {
-      const hours = String(value.getUTCHours()).padStart(2, '0');
-      const minutes = String(value.getUTCMinutes()).padStart(2, '0');
+      const hours = String(value.getHours()).padStart(2, '0');
+      const minutes = String(value.getMinutes()).padStart(2, '0');
       timeString = `${hours}:${minutes}`;
     } else {
       timeString = value;
@@ -36,7 +37,7 @@ export class Time {
   }
 
   public addMinutes(minutes: number): Time {
-    const date = this.toDate();
+    const date = this.toDate(new Date());
 
     return new Time(addMinutes(date, minutes));
   }
@@ -55,8 +56,10 @@ export class Time {
     );
   }
 
-  public toDate(date: Date = new Date()) {
-    return parse(this._value, 'HH:mm', date);
+  public toDate(referenceDate: Date) {
+    if (!referenceDate) throw new MissingDateError();
+
+    return parse(this._value, 'HH:mm', referenceDate);
   }
 
   static isValidFormat(value: string): boolean {

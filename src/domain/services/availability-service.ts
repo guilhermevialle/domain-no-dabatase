@@ -1,10 +1,4 @@
-import {
-  addDays,
-  addMinutes,
-  format,
-  isBefore,
-  isWithinInterval,
-} from 'date-fns';
+import { addMinutes, isBefore, isWithinInterval } from 'date-fns';
 import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository';
 import { IBarberRepository } from '../../interfaces/repositories/barber-repository';
 import { IAvailabilityService } from '../../interfaces/services/availability-service';
@@ -15,35 +9,39 @@ export class AvailabilityService implements IAvailabilityService {
     private readonly appointmentRepo: IAppointmentRepository,
   ) {}
 
-  async findBusyTimesByBarberInRange(
+  async isWithinBarberShift(barberId: string, startAt: Date): Promise<boolean> {
+    const barber = await this.barberRepo.findById(barberId);
+
+    if (!barber) return false;
+
+    const weekday = startAt.getDay();
+
+    return barber.workDays.some(
+      (workDay) =>
+        workDay.weekday === weekday &&
+        workDay.shifts.some((shift) =>
+          isWithinInterval(startAt, {
+            start: shift.start.toDate(startAt),
+            end: shift.end.toDate(startAt),
+          }),
+        ),
+    );
+  }
+
+  async isOverlappingByDateAndBarberId(
     barberId: string,
     startAt: Date,
-    endAt: Date,
-  ): Promise<Record<string, string[]>> {
-    const result: Record<string, string[]> = {};
-    let currentDate = startAt;
-
-    while (currentDate <= endAt) {
-      const nextDay = addDays(currentDate, 1);
-
-      const appointments = await this.appointmentRepo.findManyByBarberIdInRange(
+    ignoreAppointmentId?: string,
+  ): Promise<boolean> {
+    const overlapping =
+      await this.appointmentRepo.findOverlappingByDateAndBarberId(
         barberId,
-        currentDate,
-        nextDay,
+        startAt,
+        addMinutes(startAt, 30),
+        ignoreAppointmentId,
       );
 
-      const busyTimes = appointments.map((appointment) =>
-        format(appointment.startAt, 'HH:mm'),
-      );
-
-      if (busyTimes.length > 0) {
-        result[format(currentDate, 'yyyy-MM-dd')] = busyTimes;
-      }
-
-      currentDate = nextDay;
-    }
-
-    return result;
+    return !!overlapping;
   }
 
   async isBarberAvailable(
@@ -51,39 +49,16 @@ export class AvailabilityService implements IAvailabilityService {
     startAt: Date,
     ignoreAppointmentId?: string,
   ): Promise<boolean> {
-    const now = new Date();
+    if (isBefore(startAt, new Date())) return false;
 
-    if (isBefore(startAt, now)) return false;
+    const isWithinShift = await this.isWithinBarberShift(barberId, startAt);
+    if (!isWithinShift) return false;
 
-    const weekday = startAt.getDay();
-
-    const availableDay = await this.availableDayRepo.findByWeekdayAndBarberId(
+    const isOverlapping = await this.isOverlappingByDateAndBarberId(
       barberId,
-      weekday,
+      startAt,
+      ignoreAppointmentId,
     );
-
-    if (!availableDay) return false;
-
-    const slots = await this.timeSlotRepo.findManyByAvailableDayId(
-      availableDay.id!,
-    );
-
-    const isWithinAvailableSlot = slots.some((slot) =>
-      isWithinInterval(startAt, {
-        start: slot.start.toDate(startAt),
-        end: slot.end.toDate(startAt),
-      }),
-    );
-
-    if (!isWithinAvailableSlot) return false;
-
-    const isOverlapping =
-      await this.appointmentRepo.findOverlappingByDateAndBarberId(
-        barberId,
-        startAt,
-        addMinutes(startAt, 30),
-        ignoreAppointmentId,
-      );
 
     return !isOverlapping;
   }

@@ -1,14 +1,13 @@
 import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AvailableService } from '../../../@types/service';
-import { Barber } from '../../../domain/entities/barber';
 import { Customer } from '../../../domain/entities/customer';
 import {
   buildBarber,
   buildCustomer,
 } from '../../../test/builders/build-entities';
 
-import { buildAvailability } from '../../../test/builders/build-availability';
+import { Barber } from '../../../domain/aggregates/barber';
 import {
   buildDependencies,
   IBuildDependecies,
@@ -74,11 +73,6 @@ describe('CreateAppointment Use Case', () => {
   it('should create an appointment with correct data (duration, price, etc.) if all validations pass', async () => {
     await dependecies.customerRepo.create(customer);
     await dependecies.barberRepo.create(barber);
-
-    const { workDays } = buildAvailability(barber.id!);
-
-    await dependecies.availableDayRepo.createMany(availableDays);
-    await dependecies.timeSlotRepo.createMany(timeSlots);
 
     const result = await useCase.execute({
       barberId: 'barber-1',

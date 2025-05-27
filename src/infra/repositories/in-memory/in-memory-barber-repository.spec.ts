@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Barber } from '../../../domain/entities/barber';
+import { NonEmptyArray } from '../../../@types';
+import { Barber } from '../../../domain/aggregates/barber';
+import { WorkDay } from '../../../domain/entities/work-day';
 import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
+import { buildAvailability } from '../../../test/builders/build-availability';
 import { InMemoryBarberRepository } from './in-memory-barber-repository';
 
 describe('InMemory Barber Repository', () => {
@@ -9,17 +12,21 @@ describe('InMemory Barber Repository', () => {
 
   beforeEach(() => {
     baberRepo = new InMemoryBarberRepository();
+    const { workDays } = buildAvailability('barber-1');
     barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
       services: ['Beard Trim', 'Clean Shave'],
+      workDays: workDays as NonEmptyArray<WorkDay>,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   });
 
   it('should store a new barber', async () => {
     await baberRepo.create(barber);
 
-    const barberFound = await baberRepo.findById(barber.id!);
+    const barberFound = await baberRepo.findById(barber.id);
 
     expect(barberFound).toEqual(barber);
   });
@@ -42,7 +49,7 @@ describe('InMemory Barber Repository', () => {
   it('should return a barber by id if it exists', async () => {
     await baberRepo.create(barber);
 
-    expect(await baberRepo.findById(barber.id!)).toEqual(barber);
+    expect(await baberRepo.findById(barber.id)).toEqual(barber);
   });
 
   it('should return null if no barber is found with the given id', async () => {
