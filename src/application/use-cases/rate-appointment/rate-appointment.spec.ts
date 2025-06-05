@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { Barber } from '../../../domain/aggregates/barber';
 import { Appointment } from '../../../domain/entities/appointment';
-import { Barber } from '../../../domain/entities/barber';
 import { Customer } from '../../../domain/entities/customer';
 import { Rating } from '../../../domain/entities/rating';
 import {

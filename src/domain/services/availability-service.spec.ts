@@ -18,8 +18,8 @@ describe('Availability Service', () => {
     const { workDays } = buildAvailability('barber-1', {
       intervals: [
         {
-          start: '00:00',
-          end: '23:59',
+          start: Time.create('00:00'),
+          end: Time.create('23:59'),
         },
       ],
     });
@@ -52,8 +52,8 @@ describe('Availability Service', () => {
     const { workDays } = buildAvailability('barber-1', {
       intervals: [
         {
-          start: Time.create(addMinutes(now, 5)).value,
-          end: Time.create(addMinutes(now, 65)).value,
+          start: Time.create(addMinutes(now, 5)),
+          end: Time.create(addMinutes(now, 65)),
         },
       ],
     });

@@ -80,8 +80,12 @@ export class Time {
     return this.formatAsHHmm();
   }
 
-  get toMinutes(): number {
+  get inMinutes(): number {
     return this._minutes;
+  }
+
+  get inSeconds(): number {
+    return this._minutes * 60;
   }
 
   get minute(): number {
@@ -90,9 +94,5 @@ export class Time {
 
   get hour(): number {
     return Math.floor(this._minutes / 60);
-  }
-
-  get toSeconds(): number {
-    return this._minutes * 60;
   }
 }

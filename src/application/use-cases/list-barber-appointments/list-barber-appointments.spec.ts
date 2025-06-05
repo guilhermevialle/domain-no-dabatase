@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { Barber } from '../../../domain/entities/barber';
+import { Barber } from '../../../domain/aggregates/barber';
 import {
   buildDependencies,
   IBuildDependecies,

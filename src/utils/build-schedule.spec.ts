@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
 import { Barber } from '../domain/aggregates/barber';
+import { Time } from '../domain/value-objects/time';
 import { buildAvailability } from '../test/builders/build-availability';
 import { buildSchedule } from './build-schedule';
 
@@ -10,12 +11,12 @@ describe('Build Schedule Util', () => {
       endDay: 5,
       intervals: [
         {
-          start: '08:00',
-          end: '12:00',
+          start: Time.create('08:00'),
+          end: Time.create('12:00'),
         },
         {
-          start: '13:00',
-          end: '17:30',
+          start: Time.create('13:00'),
+          end: Time.create('17:00'),
         },
       ],
     });

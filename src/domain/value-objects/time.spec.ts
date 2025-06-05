@@ -10,8 +10,8 @@ describe('Time Value Object', () => {
 
     expect(time).toBeInstanceOf(Time);
     expect(time.formatted).toBe('01:00');
-    expect(time.toMinutes).toBe(minutes);
-    expect(time.toSeconds).toBe(minutes * 60);
+    expect(time.inMinutes).toBe(minutes);
+    expect(time.inSeconds).toBe(minutes * 60);
   });
 
   it('should create Time from a valid HH:mm string', () => {
@@ -20,8 +20,8 @@ describe('Time Value Object', () => {
 
     expect(time).toBeInstanceOf(Time);
     expect(time.formatted).toBe('08:00');
-    expect(time.toMinutes).toBe(480);
-    expect(time.toSeconds).toBe(28800);
+    expect(time.inMinutes).toBe(480);
+    expect(time.inSeconds).toBe(28800);
   });
 
   it('should create Time from a valid Date object', () => {
@@ -32,8 +32,8 @@ describe('Time Value Object', () => {
 
     expect(time).toBeInstanceOf(Time);
     expect(time.formatted).toBe('08:30');
-    expect(time.toMinutes).toBe(getHours(now) * 60 + getMinutes(now));
-    expect(time.toSeconds).toBe(
+    expect(time.inMinutes).toBe(getHours(now) * 60 + getMinutes(now));
+    expect(time.inSeconds).toBe(
       getHours(now) * 3600 + getMinutes(now) * 60 + getSeconds(now),
     );
   });
@@ -97,12 +97,12 @@ describe('Time Value Object', () => {
 
   it('should return the correct value in minutes', () => {
     const time = Time.create('08:00');
-    expect(time.toMinutes).toBe(480);
+    expect(time.inMinutes).toBe(480);
   });
 
   it('should return the correct value in seconds', () => {
     const time = Time.create('08:00');
-    expect(time.toSeconds).toBe(28800);
+    expect(time.inSeconds).toBe(28800);
   });
 
   it('should get correct hour', () => {

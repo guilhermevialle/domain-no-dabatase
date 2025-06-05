@@ -3,8 +3,8 @@ import { WorkDay } from '../../domain/entities/work-day';
 import { Time } from '../../domain/value-objects/time';
 
 interface Interval {
-  start: string;
-  end: string;
+  start: Time;
+  end: Time;
 }
 
 type AvailabilityProps = Partial<{
@@ -18,7 +18,12 @@ export function buildAvailability(
   {
     startDay = 0,
     endDay = 6,
-    intervals = [{ start: '00:00', end: '23:59' }],
+    intervals = [
+      {
+        start: Time.create('00:00'),
+        end: Time.create('23:59'),
+      },
+    ],
   }: AvailabilityProps = {},
 ) {
   const workDays: WorkDay[] = [];
@@ -32,8 +37,8 @@ export function buildAvailability(
     const shifts = intervals.map((interval) =>
       Shift.create({
         workDayId: `available-day-${barberId}-${weekday}`,
-        start: Time.create(interval.start),
-        end: Time.create(interval.end),
+        start: Time.create(interval.start.inMinutes),
+        end: Time.create(interval.end.inMinutes),
       }),
     );
 

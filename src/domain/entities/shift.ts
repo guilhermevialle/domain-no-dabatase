@@ -27,10 +27,10 @@ export class Shift {
   }
 
   private validate() {
-    if (this.props.start.value === this.props.end.value)
+    if (this.props.start.inMinutes === this.props.end.inMinutes)
       throw new SameDateError('Start and end times cannot be the same.');
 
-    if (this.props.start.toMinutes() >= this.props.end.toMinutes())
+    if (this.props.start.inMinutes >= this.props.end.inMinutes)
       throw new FutureDateError('Start time must be before end time.');
   }
 
