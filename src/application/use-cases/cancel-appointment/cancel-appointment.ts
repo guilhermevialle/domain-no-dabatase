@@ -1,6 +1,6 @@
-import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
-import { AppointmentNotFoundError } from '../../errors/shared';
+import { AppointmentNotFoundError } from '@/application/errors/shared';
+import { Appointment } from '@/domain/entities/appointment';
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
 
 interface CancelAppointmentRequest {
   id: string;

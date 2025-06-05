@@ -1,9 +1,9 @@
+import { NonEmptyArray } from '@/@types';
+import { Barber } from '@/domain/aggregates/barber';
+import { WorkDay } from '@/domain/entities/work-day';
+import { IBarberRepository } from '@/interfaces/repositories/barber-repository.interface';
+import { buildAvailability } from '@/test/builders/build-availability';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { NonEmptyArray } from '../../../@types';
-import { Barber } from '../../../domain/aggregates/barber';
-import { WorkDay } from '../../../domain/entities/work-day';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository.interface';
-import { buildAvailability } from '../../../test/builders/build-availability';
 import { InMemoryBarberRepository } from './in-memory-barber.repository';
 
 describe('InMemory Barber Repository', () => {

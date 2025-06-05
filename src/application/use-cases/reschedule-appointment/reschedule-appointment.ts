@@ -1,10 +1,10 @@
-import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
-import { IAvailabilityService } from '../../../interfaces/services/availability-service';
 import {
   AppointmentNotFoundError,
   BarberNotAvailableError,
-} from '../../errors/shared';
+} from '@/application/errors/shared';
+import { Appointment } from '@/domain/entities/appointment';
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
+import { IAvailabilityService } from '@/interfaces/services/availability-service';
 
 interface RescheduleAppointmentRequest {
   id: string;

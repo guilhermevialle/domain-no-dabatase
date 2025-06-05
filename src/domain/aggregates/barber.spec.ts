@@ -1,5 +1,5 @@
+import { buildAvailability } from '@/test/builders/build-availability';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { buildAvailability } from '../../test/builders/build-availability';
 import { Shift } from '../entities/shift';
 import { WorkDay } from '../entities/work-day';
 import { Time } from '../value-objects/time';

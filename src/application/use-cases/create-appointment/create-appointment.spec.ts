@@ -1,21 +1,18 @@
+import { AvailableService } from '@/@types/service';
+import { Customer } from '@/domain/entities/customer';
+import { buildBarber, buildCustomer } from '@/test/builders/build-entities';
 import { addMinutes } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { AvailableService } from '../../../@types/service';
-import { Customer } from '../../../domain/entities/customer';
-import {
-  buildBarber,
-  buildCustomer,
-} from '../../../test/builders/build-entities';
 
-import { Barber } from '../../../domain/aggregates/barber';
+import { Barber } from '@/domain/aggregates/barber';
 import {
   buildDependencies,
-  IBuildDependecies,
-} from '../../../test/builders/build-dependencies';
+  IBuildDependencies,
+} from '@/test/builders/build-dependencies';
 import { CreateAppointment } from './create-appointment';
 
 describe('CreateAppointment Use Case', () => {
-  let dependecies: IBuildDependecies;
+  let dependencies: IBuildDependencies;
   let useCase: CreateAppointment;
   let barber: Barber;
   let customer: Customer;
@@ -23,14 +20,14 @@ describe('CreateAppointment Use Case', () => {
 
   beforeEach(() => {
     now = new Date();
-    dependecies = buildDependencies();
+    dependencies = buildDependencies();
     barber = buildBarber('barber-1');
     customer = buildCustomer('customer-1');
     useCase = new CreateAppointment(
-      dependecies.appointmentRepo,
-      dependecies.customerRepo,
-      dependecies.barberRepo,
-      dependecies.availabilityService,
+      dependencies.appointmentRepo,
+      dependencies.customerRepo,
+      dependencies.barberRepo,
+      dependencies.availabilityService,
     );
   });
 
@@ -57,8 +54,8 @@ describe('CreateAppointment Use Case', () => {
   });
 
   it('should throw an error if the barber does not provide the requested service', async () => {
-    await dependecies.customerRepo.create(customer);
-    await dependecies.barberRepo.create(barber);
+    await dependencies.customerRepo.create(customer);
+    await dependencies.barberRepo.create(barber);
 
     await expect(() =>
       useCase.execute({
@@ -71,8 +68,8 @@ describe('CreateAppointment Use Case', () => {
   });
 
   it('should create an appointment with correct data (duration, price, etc.) if all validations pass', async () => {
-    await dependecies.customerRepo.create(customer);
-    await dependecies.barberRepo.create(barber);
+    await dependencies.customerRepo.create(customer);
+    await dependencies.barberRepo.create(barber);
 
     const result = await useCase.execute({
       barberId: 'barber-1',

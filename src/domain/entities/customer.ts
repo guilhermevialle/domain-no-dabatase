@@ -1,4 +1,4 @@
-import { randomId } from '../../utils/random-id';
+import { randomId } from '@/utils/random-id';
 import { BrazilPhone } from '../value-objects/brazil-phone';
 import { Email } from '../value-objects/email';
 

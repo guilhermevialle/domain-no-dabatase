@@ -1,7 +1,7 @@
+import { AppointmentStatus } from '@/@types/appointment';
+import { AvailableService } from '@/@types/service';
+import { randomId } from '@/utils/random-id';
 import { addMinutes, differenceInMinutes, getDay, isPast } from 'date-fns';
-import { AppointmentStatus } from '../../@types/appointment';
-import { AvailableService } from '../../@types/service';
-import { randomId } from '../../utils/random-id';
 import {
   AppointmentAlreadyCanceledError,
   AppointmentAlreadyExpiredError,

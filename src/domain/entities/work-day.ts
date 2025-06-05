@@ -1,4 +1,4 @@
-import { randomId } from '../../utils/random-id';
+import { randomId } from '@/utils/random-id';
 import {
   DuplicateShiftError,
   InvalidWeekdayError,

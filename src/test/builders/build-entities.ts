@@ -1,12 +1,9 @@
+import { Barber } from '@/domain/aggregates/barber';
+import { Appointment, AppointmentProps } from '@/domain/entities/appointment';
+import { Customer } from '@/domain/entities/customer';
+import { BrazilPhone } from '@/domain/value-objects/brazil-phone';
+import { Email } from '@/domain/value-objects/email';
 import { addDays } from 'date-fns';
-import { Barber } from '../../domain/aggregates/barber';
-import {
-  Appointment,
-  AppointmentProps,
-} from '../../domain/entities/appointment';
-import { Customer } from '../../domain/entities/customer';
-import { BrazilPhone } from '../../domain/value-objects/brazil-phone';
-import { Email } from '../../domain/value-objects/email';
 import { buildAvailability } from './build-availability';
 
 type IBuildAppointment = Partial<AppointmentProps> & {

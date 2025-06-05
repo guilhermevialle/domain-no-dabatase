@@ -1,4 +1,4 @@
-import { Appointment } from '../../domain/entities/appointment';
+import { Appointment } from '@/domain/entities/appointment';
 
 export interface IAppointmentRepository {
   create: (appointment: Appointment) => Promise<void>;

@@ -1,6 +1,6 @@
+import { Appointment } from '@/domain/entities/appointment';
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
 import { areIntervalsOverlapping } from 'date-fns';
-import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
 
 export class InMemoryAppointmentRepository implements IAppointmentRepository {
   private storage: Appointment[] = [];

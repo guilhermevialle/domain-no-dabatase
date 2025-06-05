@@ -1,6 +1,6 @@
-import { Shift } from '../../domain/entities/shift';
-import { WorkDay } from '../../domain/entities/work-day';
-import { Time } from '../../domain/value-objects/time';
+import { Shift } from '@/domain/entities/shift';
+import { WorkDay } from '@/domain/entities/work-day';
+import { Time } from '@/domain/value-objects/time';
 
 interface Interval {
   start: Time;

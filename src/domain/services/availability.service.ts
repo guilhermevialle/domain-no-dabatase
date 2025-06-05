@@ -1,7 +1,7 @@
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
+import { IBarberRepository } from '@/interfaces/repositories/barber-repository.interface';
+import { IAvailabilityService } from '@/interfaces/services/availability-service';
 import { addMinutes, isBefore, isWithinInterval } from 'date-fns';
-import { IAppointmentRepository } from '../../interfaces/repositories/appointment-repository.interface';
-import { IBarberRepository } from '../../interfaces/repositories/barber-repository.interface';
-import { IAvailabilityService } from '../../interfaces/services/availability-service';
 
 export class AvailabilityService implements IAvailabilityService {
   constructor(

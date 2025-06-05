@@ -1,4 +1,4 @@
-import { randomId } from '../../utils/random-id';
+import { randomId } from '@/utils/random-id';
 import { FutureDateError, SameDateError } from '../errors/shared';
 import { Time } from '../value-objects/time';
 

@@ -1,4 +1,4 @@
-import { Barber } from '../../domain/aggregates/barber';
+import { Barber } from '@/domain/aggregates/barber';
 
 export interface IBarberRepository {
   create: (barber: Barber) => Promise<void>;

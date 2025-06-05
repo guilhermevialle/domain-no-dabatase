@@ -1,19 +1,16 @@
-import { addMinutes } from 'date-fns';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { BarberNotAvailableError } from '@/application/errors/shared';
 import {
   buildDependencies,
-  IBuildDependecies,
-} from '../../../test/builders/build-dependencies';
-import {
-  buildAppointment,
-  buildBarber,
-} from '../../../test/builders/build-entities';
-import { BarberNotAvailableError } from '../../errors/shared';
+  IBuildDependencies,
+} from '@/test/builders/build-dependencies';
+import { buildAppointment, buildBarber } from '@/test/builders/build-entities';
+import { addMinutes } from 'date-fns';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { RescheduleAppointment } from './reschedule-appointment';
 
 describe('RescheduleAppointment Use Case', () => {
   let useCase: RescheduleAppointment;
-  let dependencies: IBuildDependecies;
+  let dependencies: IBuildDependencies;
   let now: Date;
 
   beforeEach(() => {

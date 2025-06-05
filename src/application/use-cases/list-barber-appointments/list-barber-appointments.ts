@@ -1,7 +1,7 @@
-import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository.interface';
-import { BarberNotFoundError } from '../../errors/shared';
+import { BarberNotFoundError } from '@/application/errors/shared';
+import { Appointment } from '@/domain/entities/appointment';
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
+import { IBarberRepository } from '@/interfaces/repositories/barber-repository.interface';
 
 interface ListBarberAppointmentsRequest {
   id: string;

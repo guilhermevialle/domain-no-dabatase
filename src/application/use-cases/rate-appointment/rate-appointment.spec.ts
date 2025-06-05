@@ -1,17 +1,17 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { Barber } from '../../../domain/aggregates/barber';
-import { Appointment } from '../../../domain/entities/appointment';
-import { Customer } from '../../../domain/entities/customer';
-import { Rating } from '../../../domain/entities/rating';
+import { Barber } from '@/domain/aggregates/barber';
+import { Appointment } from '@/domain/entities/appointment';
+import { Customer } from '@/domain/entities/customer';
+import { Rating } from '@/domain/entities/rating';
 import {
   buildDependencies,
-  IBuildDependecies,
-} from '../../../test/builders/build-dependencies';
+  IBuildDependencies,
+} from '@/test/builders/build-dependencies';
 import {
   buildAppointment,
   buildBarber,
   buildCustomer,
-} from '../../../test/builders/build-entities';
+} from '@/test/builders/build-entities';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { RateAppointment } from './rate-appointment';
 
 describe('RateAppointment Use Case', () => {
@@ -19,7 +19,7 @@ describe('RateAppointment Use Case', () => {
   let barber: Barber;
   let customer: Customer;
   let appointment: Appointment;
-  let dependencies: IBuildDependecies;
+  let dependencies: IBuildDependencies;
   let useCase: RateAppointment;
 
   beforeEach(() => {

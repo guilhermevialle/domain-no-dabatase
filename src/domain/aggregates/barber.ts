@@ -1,5 +1,5 @@
-import { AvailableService } from '../../@types/service';
-import { randomId } from '../../utils/random-id';
+import { AvailableService } from '@/@types/service';
+import { randomId } from '@/utils/random-id';
 import { Shift } from '../entities/shift';
 import { WorkDay } from '../entities/work-day';
 import {

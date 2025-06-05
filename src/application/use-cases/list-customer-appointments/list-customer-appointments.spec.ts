@@ -1,26 +1,26 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { Customer } from '../../../domain/entities/customer';
+import { Customer } from '@/domain/entities/customer';
 import {
   buildDependencies,
-  IBuildDependecies,
-} from '../../../test/builders/build-dependencies';
+  IBuildDependencies,
+} from '@/test/builders/build-dependencies';
 import {
   buildAppointment,
   buildCustomer,
-} from '../../../test/builders/build-entities';
+} from '@/test/builders/build-entities';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ListCustomerAppointments } from './list-customer-appointments';
 
 describe('ListCustomerAppointments Use Case', () => {
-  let dependecies: IBuildDependecies;
+  let dependencies: IBuildDependencies;
   let customer: Customer;
   let useCase: ListCustomerAppointments;
 
   beforeEach(() => {
-    dependecies = buildDependencies();
+    dependencies = buildDependencies();
     customer = buildCustomer('customer-1');
     useCase = new ListCustomerAppointments(
-      dependecies.appointmentRepo,
-      dependecies.customerRepo,
+      dependencies.appointmentRepo,
+      dependencies.customerRepo,
     );
   });
 
@@ -31,8 +31,8 @@ describe('ListCustomerAppointments Use Case', () => {
   });
 
   it('should return the list of appointments for the given customer id', async () => {
-    await dependecies.customerRepo.create(customer);
-    await dependecies.appointmentRepo.createMany([
+    await dependencies.customerRepo.create(customer);
+    await dependencies.appointmentRepo.createMany([
       buildAppointment({
         barberId: 'barber-1',
         customerId: customer.id!,

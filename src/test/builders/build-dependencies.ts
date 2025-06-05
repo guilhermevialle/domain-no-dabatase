@@ -1,10 +1,10 @@
-import { AvailabilityService } from '../../domain/services/availability.service';
-import { InMemoryAppointmentRepository } from '../../infra/repositories/in-memory/in-memory-appointment.repository';
-import { InMemoryBarberRepository } from '../../infra/repositories/in-memory/in-memory-barber.repository';
-import { InMemoryCustomerRepository } from '../../infra/repositories/in-memory/in-memory-customer.repository';
-import { InMemoryRatingRepository } from '../../infra/repositories/in-memory/in-memory-rating.repository';
+import { AvailabilityService } from '@/domain/services/availability.service';
+import { InMemoryAppointmentRepository } from '@/infra/repositories/in-memory/in-memory-appointment.repository';
+import { InMemoryBarberRepository } from '@/infra/repositories/in-memory/in-memory-barber.repository';
+import { InMemoryCustomerRepository } from '@/infra/repositories/in-memory/in-memory-customer.repository';
+import { InMemoryRatingRepository } from '@/infra/repositories/in-memory/in-memory-rating.repository';
 
-export interface IBuildDependecies {
+export interface IBuildDependencies {
   customerRepo: InMemoryCustomerRepository;
   barberRepo: InMemoryBarberRepository;
   appointmentRepo: InMemoryAppointmentRepository;
@@ -12,7 +12,7 @@ export interface IBuildDependecies {
   availabilityService: AvailabilityService;
 }
 
-export function buildDependencies(): IBuildDependecies {
+export function buildDependencies(): IBuildDependencies {
   const customerRepo = new InMemoryCustomerRepository();
   const barberRepo = new InMemoryBarberRepository();
   const appointmentRepo = new InMemoryAppointmentRepository();

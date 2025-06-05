@@ -1,11 +1,11 @@
-import { Rating, RequiredRatingProps } from '../../../domain/entities/rating';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
-import { IRatingRepository } from '../../../interfaces/repositories/rating-repository.interface';
 import {
   AppointmentAlreadyRatedError,
   AppointmentMismatchError,
   AppointmentNotFoundError,
-} from '../../errors/shared';
+} from '@/application/errors/shared';
+import { Rating, RequiredRatingProps } from '@/domain/entities/rating';
+import { IAppointmentRepository } from '@/interfaces/repositories/appointment-repository.interface';
+import { IRatingRepository } from '@/interfaces/repositories/rating-repository.interface';
 
 type RateAppointmentRequest = RequiredRatingProps;
 

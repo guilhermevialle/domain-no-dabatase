@@ -1,17 +1,14 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { Barber } from '../../../domain/aggregates/barber';
+import { Barber } from '@/domain/aggregates/barber';
 import {
   buildDependencies,
-  IBuildDependecies,
-} from '../../../test/builders/build-dependencies';
-import {
-  buildAppointment,
-  buildBarber,
-} from '../../../test/builders/build-entities';
+  IBuildDependencies,
+} from '@/test/builders/build-dependencies';
+import { buildAppointment, buildBarber } from '@/test/builders/build-entities';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ListBarberAppointments } from './list-barber-appointments';
 
 describe('ListBarberAppointments Use Case', () => {
-  let dependencies: IBuildDependecies;
+  let dependencies: IBuildDependencies;
   let barber: Barber;
   let useCase: ListBarberAppointments;
 
