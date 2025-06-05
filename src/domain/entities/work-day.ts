@@ -3,7 +3,7 @@ import {
   DuplicateShiftError,
   InvalidWeekdayError,
   MissingShiftError,
-} from '../errors/available-day-errors';
+} from '../errors/work-day-errors';
 import { Shift } from './shift';
 
 type OptionalWorkDayProps = Partial<{

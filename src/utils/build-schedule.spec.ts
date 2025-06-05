@@ -20,6 +20,7 @@ describe('Build Schedule Util', () => {
         },
       ],
     });
+
     const barber = Barber.restore({
       id: 'barber-1',
       fullName: 'John Doe',
@@ -39,7 +40,5 @@ describe('Build Schedule Util', () => {
       daysAhead: 7,
       busy,
     });
-
-    console.log(schedule);
   });
 });
