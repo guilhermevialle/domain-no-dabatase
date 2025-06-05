@@ -1,81 +1,98 @@
-import { addMinutes, isAfter, isBefore, isValid, parse } from 'date-fns';
-import { MissingDateError } from '../errors/shared';
+import { getHours, getMinutes, isValid } from 'date-fns';
+import { z } from 'zod';
+import { InvalidDateError, InvalidInputTypeError } from '../errors/shared';
+
+export const numberSchema = z
+  .number()
+  .int()
+  .min(0, { message: 'Time in minutes cannot be negative' })
+  .max(1439, { message: 'Time in minutes must be less than 1440' });
+
+export const stringSchema = z
+  .string()
+  .regex(/^([01][0-9]|2[0-3]):[0-5][0-9]$/, {
+    message: 'Time string must be in HH:mm format (00:00 to 23:59)',
+  });
+
+type TimeInput = string | number | Date;
 
 export class Time {
-  private _value: string;
+  private input: TimeInput;
+  private _minutes: number;
 
-  private constructor(value: string | Date) {
-    this._value = this.validateAndNormalize(value);
+  private constructor(input: TimeInput) {
+    this.input = input;
+    this._minutes = this.validate();
   }
 
-  private validateAndNormalize(value: string | Date): string {
-    let timeString: string;
-    if (value instanceof Date) {
-      const hours = String(value.getHours()).padStart(2, '0');
-      const minutes = String(value.getMinutes()).padStart(2, '0');
-      timeString = `${hours}:${minutes}`;
-    } else {
-      timeString = value;
+  private validate(): number {
+    if (typeof this.input === 'number') return numberSchema.parse(this.input);
+
+    if (typeof this.input === 'string') {
+      const timeStr = stringSchema.parse(this.input);
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      return hours * 60 + minutes;
     }
 
-    if (!Time.isValidFormat(timeString)) {
-      throw new Error(
-        'Formato de hora inválido. Esperado HH:mm no formato 24 horas.',
-      );
+    if (this.input instanceof Date) {
+      if (!isValid(this.input)) throw new InvalidDateError();
+
+      const hours = getHours(this.input);
+      const minutes = getMinutes(this.input);
+      return hours * 60 + minutes;
     }
 
-    const date = parse(timeString, 'HH:mm', new Date());
-    if (!isValid(date)) {
-      throw new Error('A hora deve estar entre 00:00 e 23:59.');
-    }
-
-    return timeString;
+    throw new InvalidInputTypeError();
   }
 
-  static create(value: string | Date): Time {
-    return new Time(value);
+  static create(input: TimeInput) {
+    return new Time(input);
   }
 
-  public addMinutes(minutes: number): Time {
-    const date = this.toDate(new Date());
-
-    return new Time(addMinutes(date, minutes));
+  // public methods
+  public isBefore(time: Time): boolean {
+    return this._minutes < time._minutes;
   }
 
-  public isBefore(other: Time): boolean {
-    return isBefore(
-      parse(this._value, 'HH:mm', new Date()),
-      parse(other.value, 'HH:mm', new Date()),
-    );
+  public isAfter(time: Time): boolean {
+    return this._minutes > time._minutes;
   }
 
-  public isAfter(other: Time): boolean {
-    return isAfter(
-      parse(this._value, 'HH:mm', new Date()),
-      parse(other.value, 'HH:mm', new Date()),
-    );
+  public toDate(referenceDate: Date): Date {
+    const hours = Math.floor(this._minutes / 60);
+    const minutes = this._minutes % 60;
+    const date = new Date(referenceDate);
+
+    date.setHours(hours, minutes, 0, 0);
+
+    return date;
   }
 
-  public toDate(referenceDate: Date) {
-    if (!referenceDate) throw new MissingDateError();
-
-    return parse(this._value, 'HH:mm', referenceDate);
+  // private methods
+  private formatAsHHmm(): string {
+    const hours = Math.floor(this._minutes / 60);
+    const minutes = this._minutes % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
   }
 
-  static isValidFormat(value: string): boolean {
-    return /^\d{2}:\d{2}$/.test(value) && value >= '00:00' && value <= '23:59';
-  }
-
-  toMinutes(): number {
-    const [hours, minutes] = this._value.split(':').map(Number);
-    return hours * 60 + minutes;
-  }
-
-  get value(): string {
-    return this._value;
-  }
-
+  // getters
   get formatted(): string {
-    return this._value;
+    return this.formatAsHHmm();
+  }
+
+  get toMinutes(): number {
+    return this._minutes;
+  }
+
+  get minute(): number {
+    return this._minutes % 60;
+  }
+
+  get hour(): number {
+    return Math.floor(this._minutes / 60);
+  }
+
+  get toSeconds(): number {
+    return this._minutes * 60;
   }
 }
