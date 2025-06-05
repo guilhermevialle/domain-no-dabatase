@@ -1,6 +1,6 @@
 import { Rating, RequiredRatingProps } from '../../../domain/entities/rating';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
-import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
+import { IRatingRepository } from '../../../interfaces/repositories/rating-repository.interface';
 import {
   AppointmentAlreadyRatedError,
   AppointmentMismatchError,

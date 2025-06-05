@@ -1,6 +1,6 @@
 import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
+import { IBarberRepository } from '../../../interfaces/repositories/barber-repository.interface';
 import { BarberNotFoundError } from '../../errors/shared';
 
 interface ListBarberAppointmentsRequest {

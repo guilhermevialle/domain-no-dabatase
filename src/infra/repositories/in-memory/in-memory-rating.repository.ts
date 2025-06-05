@@ -1,5 +1,5 @@
 import { Rating } from '../../../domain/entities/rating';
-import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
+import { IRatingRepository } from '../../../interfaces/repositories/rating-repository.interface';
 
 export class InMemoryRatingRepository implements IRatingRepository {
   private ratings: Rating[] = [];

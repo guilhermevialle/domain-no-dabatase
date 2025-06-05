@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Service } from '../../../domain/entities/service';
-import { IAvailableServiceRepository } from '../../../interfaces/repositories/service-repository';
+import { IAvailableServiceRepository } from '../../../interfaces/repositories/service-repository.interface';
 import { InMemoryAvailableServiceRepository } from './in-memory-available-service.repository';
 
 describe('InMemory AvailableService Repository', () => {

@@ -4,9 +4,9 @@ import {
   BASE_PRICES_IN_CENTS,
 } from '../../../@types/service';
 import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
-import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
+import { IBarberRepository } from '../../../interfaces/repositories/barber-repository.interface';
+import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository.interface';
 import { IAvailabilityService } from '../../../interfaces/services/availability-service';
 import {
   BarberDoesNotProvideServiceError,

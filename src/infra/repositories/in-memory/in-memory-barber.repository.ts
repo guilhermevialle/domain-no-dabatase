@@ -1,5 +1,5 @@
 import { Barber } from '../../../domain/aggregates/barber';
-import { IBarberRepository } from '../../../interfaces/repositories/barber-repository';
+import { IBarberRepository } from '../../../interfaces/repositories/barber-repository.interface';
 
 export class InMemoryBarberRepository implements IBarberRepository {
   private storage: Barber[] = [];

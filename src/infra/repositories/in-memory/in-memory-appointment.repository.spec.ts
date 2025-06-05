@@ -1,7 +1,7 @@
 import { addMinutes, addYears } from 'date-fns';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
 import { buildAppointment } from '../../../test/builders/build-entities';
 import { InMemoryAppointmentRepository } from './in-memory-appointment.repository';
 

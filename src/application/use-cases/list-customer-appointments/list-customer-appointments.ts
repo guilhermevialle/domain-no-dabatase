@@ -1,6 +1,6 @@
 import { Appointment } from '../../../domain/entities/appointment';
-import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
-import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
+import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository.interface';
+import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository.interface';
 import { CustomerNotFoundError } from '../../errors/shared';
 
 interface ListCustomerAppointmentsRequest {
