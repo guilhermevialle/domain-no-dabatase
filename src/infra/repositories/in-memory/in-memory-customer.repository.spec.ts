@@ -3,7 +3,7 @@ import { Customer } from '../../../domain/entities/customer';
 import { BrazilPhone } from '../../../domain/value-objects/brazil-phone';
 import { Email } from '../../../domain/value-objects/email';
 import { ICustomerRepository } from '../../../interfaces/repositories/customer-repository';
-import { InMemoryCustomerRepository } from './in-memory-customer-repository';
+import { InMemoryCustomerRepository } from './in-memory-customer.repository';
 
 describe('InMemory Customer Repository', () => {
   let customerRepo: ICustomerRepository;

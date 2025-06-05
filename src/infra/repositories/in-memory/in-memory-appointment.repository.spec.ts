@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { Appointment } from '../../../domain/entities/appointment';
 import { IAppointmentRepository } from '../../../interfaces/repositories/appointment-repository';
 import { buildAppointment } from '../../../test/builders/build-entities';
-import { InMemoryAppointmentRepository } from './in-memory-appointment-repository';
+import { InMemoryAppointmentRepository } from './in-memory-appointment.repository';
 
 describe('InMemory Appointment Repository', () => {
   let appointmentRepo: IAppointmentRepository;

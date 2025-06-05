@@ -1,8 +1,8 @@
-import { AvailabilityService } from '../../domain/services/availability-service';
-import { InMemoryAppointmentRepository } from '../../infra/repositories/in-memory/in-memory-appointment-repository';
-import { InMemoryBarberRepository } from '../../infra/repositories/in-memory/in-memory-barber-repository';
-import { InMemoryCustomerRepository } from '../../infra/repositories/in-memory/in-memory-customer-repository';
-import { InMemoryRatingRepository } from '../../infra/repositories/in-memory/in-memory-rating-repository';
+import { AvailabilityService } from '../../domain/services/availability.service';
+import { InMemoryAppointmentRepository } from '../../infra/repositories/in-memory/in-memory-appointment.repository';
+import { InMemoryBarberRepository } from '../../infra/repositories/in-memory/in-memory-barber.repository';
+import { InMemoryCustomerRepository } from '../../infra/repositories/in-memory/in-memory-customer.repository';
+import { InMemoryRatingRepository } from '../../infra/repositories/in-memory/in-memory-rating.repository';
 
 export interface IBuildDependecies {
   customerRepo: InMemoryCustomerRepository;

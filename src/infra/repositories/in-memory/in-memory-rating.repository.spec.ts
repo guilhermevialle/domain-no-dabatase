@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { Rating } from '../../../domain/entities/rating';
 import { IRatingRepository } from '../../../interfaces/repositories/rating-repository';
-import { InMemoryRatingRepository } from './in-memory-rating-repository';
+import { InMemoryRatingRepository } from './in-memory-rating.repository';
 
 describe('InMemory Rating Repository', () => {
   let ratingRepo: IRatingRepository;
